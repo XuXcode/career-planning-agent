@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - AI职业规划智能体</title>
+    <style>
+        :root {
+            --bg: #f5f8fd;
+            --card: rgba(255, 255, 255, 0.88);
+            --card-solid: #fff;
+            --line: rgba(15, 23, 42, 0.08);
+            --line-strong: rgba(79, 142, 247, 0.18);
+            --text: #0f172a;
+            --muted: #64748b;
+            --primary: #4f8ef7;
+            --primary-2: #2f6ee6;
+            --primary-soft: rgba(79, 142, 247, 0.10);
+            --accent: #8b5cf6;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+            --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.05);
+            --radius-xl: 28px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background:
+                    radial-gradient(circle at 10% 5%, rgba(79, 142, 247, 0.14), transparent 24%),
+                    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.10), transparent 18%),
+                    radial-gradient(circle at 50% 90%, rgba(79, 142, 247, 0.08), transparent 30%),
+                    linear-gradient(180deg, #f8fbff 0%, #f5f8fd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 520px;
+            padding: 40px 24px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-card {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 56px 48px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .brand-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .brand-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 16px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 18px 18px 10px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input::placeholder {
+            color: var(--muted);
+        }
+
+        .form-input.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-input.success {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        .username-status {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            display: none;
+        }
+
+        .username-status.checking {
+            display: block;
+            color: var(--warning);
+        }
+
+        .username-status.available {
+            display: block;
+            color: var(--success);
+        }
+
+        .username-status.unavailable {
+            display: block;
+            color: var(--danger);
+        }
+
+        .password-requirements {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .password-requirements .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .password-requirements .requirement::before {
+            content: '○';
+            margin-right: 6px;
+            color: var(--muted);
+        }
+
+        .password-requirements .requirement.valid::before {
+            content: '●';
+            color: var(--success);
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .register-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(79, 142, 247, 0.3);
+        }
+
+        .register-button:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .register-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .register-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 12px 16px;
+            margin: 16px 0;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            display: block;
+        }
+
+        .success {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+            display: block;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .login-link a:hover {
+            color: var(--primary-2);
+            text-decoration: underline;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .shape-1 {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            top: 10%;
+            left: 5%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            top: 60%;
+            right: 8%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .shape-3 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-2), var(--primary));
+            bottom: 20%;
+            left: 15%;
+            animation: float 7s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 16px;
+            }
+
+            .register-card {
+                padding: 32px 24px;
+            }
+
+            .brand-title {
+                font-size: 28px;
+            }
+        }
+
+        .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 16px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+.checkbox-group label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-group a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.checkbox-group a:hover {
+    text-decoration: underline;
+}
+
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="brand-section">
+                <h1 class="brand-title">AI职业规划智能体</h1>
+                <p class="brand-subtitle">创建账户</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"></span>
+                        <input type="text" id="username" class="form-input" placeholder="请输入用户名" required>
+                        <span id="usernameStatus" class="username-status"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"></span>
+                        <input type="password" id="password" class="form-input" placeholder="请输入密码" required>
+                    </div>
+                    <div class="password-requirements">
+                        <div id="lengthReq" class="requirement">密码长度至少6个字符</div>
+                        <div id="usernameReq" class="requirement">密码不能包含用户名</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"></span>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="请再次输入密码" required>
+                    </div>
+                </div>
+
+                <div id="message" class="message"></div>
+                
+                <div class="checkbox-group">
+    <input type="checkbox" id="agreeCheckbox">
+    <label for="agreeCheckbox">
+        我已阅读并同意 <a href="./user_agreement.html" target="_blank">《用户协议》</a> 和 <a href="./privacy_policy.html" target="_blank">《隐私政策》</a>
+    </label>
+</div>
+
+                <button type="submit" class="register-button" id="registerBtn">
+                    立即注册
+                </button>
+            </form>
+
+            <div class="login-link">
+                已有账户？<a href="login.html">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let usernameCheckTimeout;
+        let isUsernameAvailable = false;
+
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.className = `message ${type}`;
+            messageEl.textContent = message;
+        }
+
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+            const lengthReq = document.getElementById('lengthReq');
+            const usernameReq = document.getElementById('usernameReq');
+
+            let isValid = true;
+
+            // 检查密码长度
+            if (password.length >= 6) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+                isValid = false;
+            }
+
+            // 检查密码是否包含用户名
+            if (!username || !password.toLowerCase().includes(username.toLowerCase())) {
+                usernameReq.classList.add('valid');
+            } else {
+                usernameReq.classList.remove('valid');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function checkPasswordsMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmInput = document.getElementById('confirmPassword');
+
+            if (confirmPassword) {
+                if (password === confirmPassword) {
+                    confirmInput.classList.remove('error');
+                    confirmInput.classList.add('success');
+                    return true;
+                } else {
+                    confirmInput.classList.remove('success');
+                    confirmInput.classList.add('error');
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // 1. 检查用户名是否可用
+        function checkUsernameAvailability(username) {
+            const usernameStatus = document.getElementById('usernameStatus');
+            if (username.length < 3) {
+                usernameStatus.textContent = '';
+                return;
+            }
+
+            usernameStatus.textContent = '检查中...';
+
+            fetch(`/auth/check-username?username=${encodeURIComponent(username)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 重点 1：判断 code 是否为 200
+                    if (data.code === 200) {
+                        // 重点 2：兼容性判断逻辑
+                        // 只要 data.data 是 true，或者 data.data.available 是 true，或者字符串包含“可用”
+                        const isAvailable = (data.data === true) ||
+                            (data.data && data.data.available === true) ||
+                            (data.data === "用户名可用");
+
+                        if (isAvailable) {
+                            usernameStatus.className = 'username-status available';
+                            usernameStatus.textContent = '✓';
+                            isUsernameAvailable = true; // 允许提交
+                        } else {
+                            usernameStatus.className = 'username-status unavailable';
+                            usernameStatus.textContent = '✗';
+                            isUsernameAvailable = false; // 拦截提交
+                        }
+                    } else {
+                        usernameStatus.className = 'username-status unavailable';
+                        usernameStatus.textContent = '✗';
+                        isUsernameAvailable = false;
+                    }
+                })
+                .catch(() => {
+                    usernameStatus.textContent = '网络错误';
+                    isUsernameAvailable = false;
+                });
+        }
+
+        function validateForm() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            return username.length >= 3 &&
+                   password.length >= 6 &&
+                   password === confirmPassword &&
+                   isUsernameAvailable &&
+                   validatePassword();
+        }
+
+        // 事件监听器
+        document.getElementById('username').addEventListener('input', function() {
+            const username = this.value.trim();
+
+            clearTimeout(usernameCheckTimeout);
+
+            if (username.length >= 3) {
+                this.classList.remove('error');
+                this.classList.add('success');
+
+                usernameCheckTimeout = setTimeout(() => {
+                    checkUsernameAvailability(username);
+                }, 500);
+            } else {
+                this.classList.remove('success');
+                if (username.length > 0) {
+                    this.classList.add('error');
+                }
+                document.getElementById('usernameStatus').style.display = 'none';
+                isUsernameAvailable = false;
+            }
+
+            // 重新验证密码
+            validatePassword();
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            validatePassword();
+            checkPasswordsMatch();
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            checkPasswordsMatch();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // --- 这里的逻辑是关键：拦截不合规的提交 ---
+            if (username.length < 3) {
+                showMessage('用户名长度不能少于3个字符', 'error');
+                return;
+            }
+
+            // 如果之前的实时检查显示“不可用”，这里直接拦截，不发请求
+            if (!isUsernameAvailable) {
+                showMessage('用户名不可用，请更换一个', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('密码长度不能少于6个字符', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('两次输入的密码不一致', 'error');
+                return;
+            }
+
+
+            const agreeCheckbox = document.getElementById('agreeCheckbox');
+            if (!agreeCheckbox.checked) {
+                showMessage('请阅读并同意用户协议和隐私政策', 'error');
+                 return;
+            }//是否勾选用户协议
+
+            // --- 校验通过，开始发送请求 ---
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.textContent = '注册中...';
+
+            fetch('/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        showMessage('注册成功！正在跳转...', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    } else {
+                        showMessage(data.message || '注册失败', 'error');
+                    }
+                })
+                .catch(() => {
+                    showMessage('网络错误，请稍后重试', 'error');
+                })
+                .finally(() => {
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = '注册';
+                });
+        });
+
+        // 输入框动画效果
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

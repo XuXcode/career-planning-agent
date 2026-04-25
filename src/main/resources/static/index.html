@@ -1,0 +1,3725 @@
+<html lang="zh-CN">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>AI职业规划智能体</title><script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><style>:root {
+            --bg: #f5f8fd;
+            --card: rgba(255, 255, 255, 0.88);
+            --card-solid: #fff;
+            --line: rgba(15, 23, 42, 0.08);
+            --line-strong: rgba(79, 142, 247, 0.18);
+            --text: #0f172a;
+            --muted: #64748b;
+            --primary: #4f8ef7;
+            --primary-2: #2f6ee6;
+            --primary-soft: rgba(79, 142, 247, 0.10);
+            --accent: #8b5cf6;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+            --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.05);
+            --radius-xl: 5px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background:
+                    radial-gradient(circle at 10% 5%, rgba(79, 142, 247, 0.14), transparent 24%),
+                    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.10), transparent 18%),
+                    linear-gradient(180deg, #f8fbff 0%, #f5f8fd 100%);
+            overflow-x: hidden;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        code {
+            background: rgba(79, 142, 247, 0.08);
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            min-width: 240px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            padding: 18px 14px;
+            background: linear-gradient(180deg, #0d1322 0%, #111b31 100%);
+            color: #dbe7ff;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: width .22s ease, min-width .22s ease;
+            border-right: 1px solid rgba(255,255,255,.06);
+            z-index: 30;
+        }
+
+        .sidebar.collapsed {
+            width: 88px;
+            min-width: 88px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 8px 6px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #7cb3ff, #4f8ef7 58%, #8b5cf6);
+            box-shadow: 0 12px 24px rgba(79, 142, 247, .25);
+            flex-shrink: 0;
+            font-size: 20px;
+        }
+
+        .brand-text {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text strong {
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.15;
+            letter-spacing: .2px;
+        }
+
+        .brand-text span {
+            margin-top: 4px;
+            color: rgba(219,231,255,.72);
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar.collapsed .brand-text {
+            .sidebar.collapsed .menu-text,
+            .sidebar.collapsed .sidebar-footer {
+            display: none;
+            }
+        }
+
+
+        .collapse-btn {
+            align-self: flex-end;
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.08);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            transition: .2s ease;
+        }
+
+        .collapse-btn:hover {
+            background: rgba(255,255,255,.06);
+            color: #fff;
+        }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 2px;
+        }
+
+        .menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 14px;
+            border-radius: 3px;
+            background: transparent;
+            color: rgba(219,231,255,.85);
+            transition: .18s ease;
+            text-align: left;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,.06);
+            color: #fff;
+            transform: translateX(2px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, rgba(79,142,247,.24), rgba(139,92,246,.18));
+            color: #fff;
+            box-shadow: inset 0 0 0 1px rgba(124,179,255,.10);
+        }
+
+        .menu-ico {
+            width: 34px;
+            height: 34px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.01);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .menu-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            line-height: 1.15;
+        }
+
+        .menu-text strong {
+            font-size: 14px;
+        }
+
+        .menu-text small {
+            margin-top: 4px;
+            font-size: 12px;
+            color: rgba(219,231,255,.62);
+        }
+
+        .sidebar.collapsed .menu-text {
+            display: none;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 14px 14px 8px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            color: rgba(219,231,255,.72);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 20px 20px 28px;
+            padding-right: 52px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 12px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px 18px;
+            border-radius: 5px;
+            background: rgba(255,255,255,.74);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,.74);
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 18px;
+        }
+
+        .title-wrap {
+            min-width: 0;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-2);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .eyebrow::before {
+            content: "";
+            font-size: 14px;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 27px;
+            line-height: 1.15;
+            letter-spacing: -.4px;
+        }
+
+        .subtitle {
+            margin: 8px 0 0;
+            max-width: 88ch;
+            font-size: 13px;
+            line-height: 1.85;
+            color: var(--muted);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .btn {
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            transition: .18s ease;
+            white-space: nowrap;
+            box-shadow: 0 10px 22px rgba(15,23,42,.04);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(15,23,42,.12);
+        }
+
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, #4f8ef7, #5183e0);
+            box-shadow: 0 10px 22px rgba(79,142,247,.24);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #272838;
+            border: 1px solid rgba(79,142,247,.18);
+        }
+
+        .btn-ghost {
+            background: rgba(255,255,255,.8);
+            color: #334155;
+            border: 1px solid rgba(15,23,42,.06);
+        }
+
+        .btn-small {
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+        }
+
+        .section {
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: var(--card);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,.84);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius-xl);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.3fr .9fr;
+            gap: 18px;
+        }
+
+        .hero-copy,
+        .hero-side,
+        .section-card,
+        .detail-card,
+        .upload-card,
+        .report-card,
+        .graph-card {
+            padding: 24px;
+        }
+
+        .hero-copy {
+            min-height: 340px;
+            background:
+                    radial-gradient(circle at 12% 16%, rgba(79,142,247,.12), transparent 24%),
+                    radial-gradient(circle at 88% 20%, rgba(139,92,246,.10), transparent 18%),
+                    rgba(255,255,255,.90);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .hero-tag {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 13px;
+            font-weight: 800;
+        } 
+
+        .hero-title {
+            margin: 8px 0 0;
+            font-size: clamp(30px, 3.9vw, 40px);
+            line-height: 1.04;
+            letter-spacing: -.9px;
+        }
+
+        .hero-desc {
+            margin: 14px 0 0;
+            max-width: 62ch;
+            font-size: 15px;
+            line-height: 1.95;
+            color: var(--muted);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 12px;
+        }
+
+        .stat {
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.92);
+            border: 1px solid rgba(79,142,247,.10);
+            box-shadow: 0 10px 22px rgba(15,23,42,.04);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .hero-side {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background:
+                    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.86)),
+                    radial-gradient(circle at top right, rgba(79,142,247,.10), transparent 30%);
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .panel-head h3 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .panel-head p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .match-ring {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(79,142,247,.08), rgba(255,255,255,.94));
+            border: 1px solid rgba(79,142,247,.12);
+        }
+
+        .ring {
+            width: 114px;
+            height: 114px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0 75%, rgba(79,142,247,.12) 75% 100%);
+            display: grid;
+            place-items: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .ring::after {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: inset 0 0 0 1px rgba(79,142,247,.10);
+        }
+
+        .ring-inner {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .ring-inner strong {
+            display: block;
+            font-size: 28px;
+            line-height: 1;
+            color: var(--primary-2);
+        }
+
+        .ring-inner span {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .match-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .match-info .big {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .match-info p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.85;
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .mini-card {
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.92);
+            border: 1px solid rgba(15,23,42,.06);
+        }
+
+        .mini-card strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .mini-card span {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.2;
+            letter-spacing: -.3px;
+        }
+
+        .section-head p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar .stats {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .toolbar .stats strong {
+            color: var(--text);
+        }
+
+        .search-like {
+            min-width: 280px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid rgba(15,23,42,.08);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(15,23,42,.03);
+        }
+
+        .search-like span {
+            color: var(--muted);
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .search-like input {
+            border: 0;
+            outline: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        .search-like input::placeholder {
+         font-size: 14px;
+        }
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .job-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 122px;
+            padding: 16px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,251,255,.96));
+            border: 1px solid rgba(15,23,42,.06);
+            box-shadow: 0 12px 28px rgba(15,23,42,.04);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .job-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: linear-gradient(180deg, #4f8ef7, #8b5cf6);
+            opacity: .65;
+        }
+
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 36px rgba(15,23,42,.08);
+            border-color: rgba(79,142,247,.18);
+        }
+
+        .job-card.active {
+            background: linear-gradient(180deg, rgba(240,247,255,.98), rgba(255,255,255,.98));
+            border-color: rgba(79,142,247,.36);
+            box-shadow: 0 18px 36px rgba(79,142,247,.10);
+        }
+
+        .job-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .job-name {
+            margin: 0;
+            font-size: 17px;
+            line-height: 1.35;
+        }
+
+        .job-id {
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .job-snippet {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.9;
+            color: var(--muted);
+            min-height: 42px;
+        }
+
+        .job-footer {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            border: 1px solid rgba(79,142,247,.10);
+        }
+
+        .tag.gray {
+            background: rgba(15,23,42,.04);
+            color: #475569;
+            border-color: rgba(15,23,42,.05);
+        }
+
+        .tag.green {
+            background: rgba(22,163,74,.10);
+            color: #166534;
+            border-color: rgba(22,163,74,.10);
+        }
+
+        .tag.orange {
+            background: rgba(245,158,11,.12);
+            color: #92400e;
+            border-color: rgba(245,158,11,.10);
+        }
+
+        .tag.red {
+            background: rgba(239,68,68,.10);
+            color: #991b1b;
+            border-color: rgba(239,68,68,.10);
+        }
+
+        .pagination {
+            margin-top: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            min-width: 42px;
+            height: 42px;
+            padding: 0 12px;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid rgba(15,23,42,.08);
+            color: #334155;
+            font-weight: 700;
+            box-shadow: 0 8px 18px rgba(15,23,42,.03);
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #4f8ef7, #2f6ee6);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .page-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .detail-card {
+            position: sticky;
+            top: 106px;
+        }
+
+        .detail-content {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .detail-hero {
+            padding: 18px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(79,142,247,.10), rgba(139,92,246,.08));
+            border: 1px solid rgba(79,142,247,.10);
+        }
+
+        .detail-hero h3 {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.28;
+        }
+
+        .detail-hero p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .detail-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 10px;
+        }
+
+        .metric {
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.94);
+            border: 1px solid rgba(15,23,42,.06);
+        }
+
+        .metric strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .metric span {
+            color: #0f172a;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .detail-section {
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.94);
+            border: 1px solid rgba(15,23,42,.06);
+        }
+
+        .detail-section h4 {
+            margin: 0 0 12px;
+            font-size: 15px;
+        }
+
+        .detail-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .progress-item {
+            margin-bottom: 14px;
+        }
+
+        .progress-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .progress-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .progress-row strong {
+            text-align: right;
+            max-width: 68%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(15,23,42,.06);
+        }
+
+        .progress-bar > div {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #4f8ef7, #8b5cf6);
+        }
+
+        .graph-layout {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .graph-left-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-width: 0;
+        }
+
+        .graph-wrap {
+            min-height: 700px;
+            overflow: hidden;
+        }
+
+        .graph-toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        #graphChart {
+            width: 100%;
+            height: 640px;
+        }
+
+        .relation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .relation-card {
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.94);
+            border: 1px solid rgba(15,23,42,.06);
+            box-shadow: 0 10px 22px rgba(15,23,42,.03);
+        }
+
+        .relation-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .relation-head strong {
+            font-size: 15px;
+        }
+
+        .relation-desc {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .upload-box {
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.94);
+            border: 1px solid rgba(15,23,42,.06);
+        }
+
+        .upload-box h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        .upload-note {
+            margin: 0 0 14px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.85;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid rgba(15,23,42,.10);
+            margin-bottom: 12px;
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 160px;
+            resize: vertical;
+            border-radius: 18px;
+            border: 1px solid rgba(15,23,42,.10);
+            background: #fff;
+            outline: none;
+            padding: 14px;
+            line-height: 1.85;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .report-toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .report-toolbar .left {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .report-toolbar .left strong {
+            font-size: 18px;
+        }
+
+        .report-toolbar .left span {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .report-status {
+            margin-bottom: 14px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(79,142,247,.08);
+            color: #1d4ed8;
+            font-size: 13px;
+            line-height: 1.85;
+        }
+
+        .report-empty {
+            padding: 38px 18px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.94);
+            border: 1px dashed rgba(79,142,247,.24);
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.95;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .report-box {
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.95);
+            border: 1px solid rgba(15,23,42,.06);
+        }
+
+        .report-box.wide {
+            grid-column: 1 / -1;
+        }
+
+        .report-box h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .report-box h4 {
+            margin: 14px 0 10px;
+            font-size: 15px;
+        }
+
+        .report-box p {
+            margin: 0;
+            color: #334155;
+            font-size: 13px;
+            line-height: 1.92;
+        }
+
+        .report-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .report-list {
+            margin: 0;
+            padding-left: 18px;
+            color: #334155;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .matched-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid rgba(15,23,42,.08);
+        }
+
+        .matched-table th,
+        .matched-table td {
+            padding: 12px 10px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 13px;
+            line-height: 1.8;
+            border-bottom: 1px solid rgba(15,23,42,.06);
+        }
+
+        .matched-table th {
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .matched-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 10px;
+        }
+
+        .action-card {
+            padding: 14px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(79,142,247,.08), rgba(255,255,255,.96));
+            border: 1px solid rgba(79,142,247,.12);
+        }
+
+        .action-card strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .action-card p {
+            margin: 0;
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.85;
+        }
+
+        .loading-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,.62);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-card {
+            min-width: 250px;
+            padding: 20px 24px;
+            border-radius: 22px;
+            background: #fff;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid rgba(79,142,247,.18);
+            border-top-color: var(--primary);
+            animation: spin .85s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 1100;
+            min-width: 260px;
+            max-width: 420px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(15,23,42,.92);
+            color: #fff;
+            box-shadow: 0 16px 34px rgba(15,23,42,.26);
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity .22s ease, transform .22s ease;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-anchor {
+            scroll-margin-top: 0px;
+        }
+
+        #pdfTemplate {
+            position: fixed;
+            left: -99999px;
+            top: 0;
+            width: 794px;
+            background: #fff;
+            color: #0f172a;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .pdf-page {
+            width: 794px;
+            box-sizing: border-box;
+            padding: 30px 34px;
+            background: #fff;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        .pdf-cover {
+            min-height: 1120px;
+            background:
+                    radial-gradient(circle at 88% 10%, rgba(79,142,247,.14), transparent 18%),
+                    radial-gradient(circle at 12% 22%, rgba(139,92,246,.10), transparent 16%),
+                    linear-gradient(180deg, #f8fbff, #fff 44%, #f8fbff);
+        }
+
+        .pdf-cover .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .pdf-cover h1 {
+            margin: 0;
+            font-size: 38px;
+            line-height: 1.12;
+            letter-spacing: -.8px;
+        }
+
+        .pdf-cover p {
+            margin: 14px 0 0;
+            color: #475569;
+            font-size: 14px;
+            line-height: 2;
+            max-width: 62ch;
+        }
+
+        .pdf-hero-box {
+            margin-top: 26px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.88);
+            border: 1px solid rgba(79,142,247,.10);
+        }
+
+        .pdf-hero-box h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        .pdf-stats {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+        }
+
+        .pdf-stat {
+            padding: 14px;
+            border-radius: 16px;
+            background: #fff;
+            border: 1px solid rgba(15,23,42,.07);
+        }
+
+        .pdf-stat strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 22px;
+            color: #1d4ed8;
+        }
+
+        .pdf-stat span {
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+        .pdf-section {
+            margin-top: 18px;
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(15,23,42,.07);
+            background: #fff;
+        }
+
+        .pdf-section h2 {
+            margin: 0 0 12px;
+            font-size: 20px;
+        }
+
+        .pdf-section h3 {
+            margin: 16px 0 10px;
+            font-size: 16px;
+        }
+
+        .pdf-section p,
+        .pdf-section li {
+            font-size: 13px;
+            line-height: 1.95;
+            color: #334155;
+        }
+
+        .pdf-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .pdf-chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .pdf-table th,
+        .pdf-table td {
+            border: 1px solid rgba(15,23,42,.08);
+            padding: 10px 8px;
+            font-size: 12px;
+            vertical-align: top;
+            line-height: 1.75;
+        }
+
+        .pdf-table th {
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+        }
+
+        .pdf-footer {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 1360px) {
+            .hero,
+            .content-grid,
+            .graph-layout,
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-card {
+                position: static;
+            }
+        }
+
+        @media (max-width: 1080px) {
+            .sidebar {
+                width: 88px;
+                min-width: 88px;
+            }
+            .brand-text,
+            .menu-text,
+            .sidebar-footer {
+                display: none;
+            }
+            .hero-stats,
+            .mini-grid,
+            .report-grid,
+            .actions-grid,
+            .detail-metrics,
+            .job-grid {
+                grid-template-columns: 1fr;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .actions {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                align-items: center;
+                gap: 10px;
+                overflow-x: auto;
+            }
+
+            .collapse-btn {
+                display: none;
+            }
+
+            .menu {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0;
+            }
+
+            .menu-item {
+                flex: 0 0 auto;
+            }
+
+            .main {
+                padding: 14px;
+            }
+
+            .topbar {
+                top: 0;
+                position: static;
+            }
+
+            .hero-copy,
+            .hero-side,
+            .section-card,
+            .detail-card,
+            .upload-card,
+            .report-card,
+            .graph-card {
+                padding: 18px;
+            }
+
+            #graphChart {
+                height: 520px;
+            }
+
+            .search-like {
+                min-width: 100%;
+            }
+
+            .pdf-page {
+                width: 794px;
+            }
+        } </style><style>
+        /* ===== 追加：布局与抽屉优化 ===== */
+        .content-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .detail-card {
+            display: none !important;
+        }
+        .section-card.jobs-full {
+            padding-bottom: 18px;
+        }
+        .job-drawer {
+            position: fixed;
+            top: 92px;
+            right: 14px;
+            bottom: 14px;
+            width: min(460px, calc(100vw - 38px));
+            z-index: 50;
+            transform: translateX(calc(100% - 35px));
+            transition: transform .26s ease, box-shadow .26s ease;
+            pointer-events: none;
+        }
+        .job-drawer.open {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        .job-drawer .drawer-panel {
+            height: 100%;
+            background: rgba(255,255,255,.96);
+            backdrop-filter: blur(18px);
+            border-radius: 28px 0 0 28px;
+            border: 1px solid rgba(79,142,247,.12);
+            box-shadow: 0 24px 48px rgba(15,23,42,.16);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .job-drawer .drawer-head {
+            padding: 18px 18px 14px;
+            border-bottom: 1px solid rgba(15,23,42,.06);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .job-drawer .drawer-head h2 {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.25;
+        }
+        .job-drawer .drawer-meta {
+            padding: 12px 18px 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.85;
+        }
+        .job-drawer .drawer-body {
+            padding: 16px 18px 18px;
+            overflow: auto;
+            flex: 1;
+        }
+        .job-drawer .drawer-handle {
+            position: absolute;
+            left: 0;
+            top: 72px;
+            width: 52px;
+            height: 52px;
+            border-radius: 18px 0 0 18px;
+            background: linear-gradient(135deg, #4f8ef7, #2f6ee6);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 16px 26px rgba(79,142,247,.24);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .job-drawer.open .drawer-handle {
+            display: none;
+        }
+        .drawer-close-btn {
+            white-space: nowrap;
+        }
+
+        /* ===== 报告区：更紧凑更饱满 ===== */
+        .report-overview {
+            display: grid;
+            grid-template-columns: 1.12fr .88fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .report-summary-card,
+        .report-radar-card {
+            padding: 18px;
+            border-radius: 24px;
+            background: rgba(255,255,255,.94);
+            border: 1px solid rgba(15,23,42,.06);
+            box-shadow: 0 12px 28px rgba(15,23,42,.03);
+        }
+        .report-summary-top {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .report-stat {
+            padding: 14px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(79,142,247,.08), rgba(255,255,255,.96));
+            border: 1px solid rgba(79,142,247,.12);
+            min-height: 92px;
+        }
+        .report-stat strong {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 6px;
+            line-height: 1.1;
+            color: var(--primary-2);
+        }
+        .report-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+        .report-summary-note {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(79,142,247,.06);
+            border: 1px solid rgba(79,142,247,.10);
+            color: #334155;
+            font-size: 13px;
+            line-height: 1.95;
+            margin-top: 6px;
+        }
+        .report-mini-list {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .report-mini-item {
+            position: relative;
+            padding: 14px 14px 42px;
+            border-radius: 16px;
+            background: rgba(255,255,255,.96);
+            border: 1px solid rgba(15,23,42,.06);
+            overflow: hidden;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .report-mini-item strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .report-mini-content {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.85;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .report-mini-item.mini-collapsible {
+            cursor: default;
+        }
+        .report-mini-item.mini-collapsible:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,.04);
+            border-color: rgba(79,142,247,.18);
+        }
+        .report-mini-item.mini-collapsible .report-mini-content {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+        .report-mini-item.mini-collapsible.expanded {
+            overflow: visible;
+        }
+        .report-mini-item.mini-collapsible.expanded .report-mini-content {
+            display: block;
+            -webkit-line-clamp: unset;
+            overflow: visible;
+        }
+        .mini-toggle-btn {
+            position: absolute;
+            right: 12px;
+            bottom: 10px;
+            padding: 6px 10px;
+            border: 1px solid rgba(79,142,247,.14);
+            border-radius: 999px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(15,23,42,.04);
+        }
+        .mini-toggle-btn:hover {
+            background: rgba(79,142,247,.14);
+        }
+        .mini-toggle-btn.hidden {
+            display: none !important;
+        }
+        #reportRadarChart {
+            width: 100%;
+            height: 300px;
+        }
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 14px;
+            align-items: start;
+        }
+        .report-box {
+            grid-column: span 6;
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255,255,255,.95);
+            border: 1px solid rgba(15,23,42,.06);
+            box-shadow: 0 10px 22px rgba(15,23,42,.03);
+        }
+        .report-box.wide {
+            grid-column: span 12;
+        }
+        .report-box h3 {
+            margin-bottom: 12px;
+        }
+        .report-box p,
+        .report-list {
+            line-height: 1.9;
+        }
+        .report-list {
+            margin: 0;
+            padding-left: 18px;
+            color: #334155;
+            font-size: 13px;
+        }
+        .report-list li + li {
+            margin-top: 6px;
+        }
+        .report-top-jobs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .report-job-card {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #fff;
+            border: 1px solid rgba(79,142,247,.10);
+        }
+        .report-job-card strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .report-job-card span {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+        .report-note-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 10px;
+        }
+        .report-note {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(79,142,247,.06);
+            border: 1px solid rgba(79,142,247,.10);
+            font-size: 13px;
+            line-height: 1.85;
+        }
+
+/* 更紧凑的空态 */
+        .report-empty {
+            padding: 24px 18px;
+            line-height: 1.9;
+        }
+
+        /* 让报告区更自然 */
+        #reportContent {
+            display: block;
+        }
+
+        /* A4 PDF 页面 */
+
+        .pdf-page {
+            width: 794px;
+            min-height: 1122px;
+            box-sizing: border-box;
+            padding: 28px 34px;
+            background: #fff;
+            overflow: hidden;
+        }
+        .pdf-page + .pdf-page {
+            page-break-before: always;
+        }
+        .pdf-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 8px;
+        }
+        .pdf-subtitle {
+            color: #475569;
+            line-height: 1.9;
+            font-size: 13px;
+            margin: 0 0 14px;
+        }
+        .pdf-section {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 18px;
+            border: 1px solid rgba(15,23,42,.07);
+            background: #fff;
+        }
+        .pdf-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 10px;
+        }
+        .pdf-kpi {
+            padding: 14px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(79,142,247,.08), rgba(255,255,255,.98));
+            border: 1px solid rgba(79,142,247,.12);
+        }
+        .pdf-kpi strong {
+            display: block;
+            font-size: 22px;
+            color: #1d4ed8;
+            margin-bottom: 6px;
+        }
+        .pdf-kpi span {
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+        .pdf-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .pdf-chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .pdf-table th,
+        .pdf-table td {
+            border: 1px solid rgba(15,23,42,.08);
+            padding: 10px 8px;
+            font-size: 12px;
+            vertical-align: top;
+            line-height: 1.75;
+        }
+        .pdf-table th {
+            background: rgba(79,142,247,.10);
+            color: #1d4ed8;
+        }
+        .pdf-footer {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        /* 小屏优化 */
+        @media (max-width: 1360px) {
+            .report-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 1080px) {
+            .report-summary-top,
+            .report-mini-list,
+            .report-top-jobs,
+            .report-note-list {
+                grid-template-columns: 1fr;
+            }
+            .report-box,
+            .report-box.wide {
+                grid-column: span 12;
+            }
+        }
+        @media (max-width: 720px) {
+            .job-drawer {
+                top: auto;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                width: auto;
+                height: 72vh;
+                transform: translateY(calc(100% - 56px));
+            }
+            .job-drawer.open {
+                transform: translateY(0);
+            }
+            .job-drawer .drawer-panel {
+                border-radius: 26px 26px 0 0;
+            }
+            .job-drawer .drawer-handle {
+                top: -54px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 16px 16px 0 0;
+            }
+        }
+        </style><style>
+        /* ===== Front-end fixes ===== */
+        .report-card {
+            position: relative;
+        }
+        .report-content-shell {
+            position: relative;
+        }
+        #reportContent {
+            position: relative;
+            min-height: 260px;
+        }
+        .report-loading-inline {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(10px);
+            border-radius: 22px;
+            z-index: 12;
+        }
+        .report-loading-inline.hidden {
+            display: none !important;
+        }
+        .report-loading-card {
+            min-width: 240px;
+            padding: 18px 22px;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .report-box {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform .18s ease, box-shadow .18s ease, max-height .24s ease;
+        }
+        .report-box:hover {
+            transform: translateY(-1px);
+        }
+        .report-mini-item.mini-collapsible {
+            cursor: default;
+        }
+        .report-mini-item.mini-collapsible:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(15,23,42,.04);
+            border-color: rgba(79,142,247,.18);
+        }
+        .report-box {
+            cursor: default;
+        }
+        .report-box .matched-table {
+            position: relative;
+            z-index: 2;
+        }
+        .report-box .report-chips,
+        .report-box .report-list,
+        .report-box .report-mini-list,
+        .report-box .actions-grid,
+        .report-box .report-note-list {
+            position: relative;
+            z-index: 2;
+        }
+
+            /* 让侧边栏作为相对定位的容器 */
+        .sidebar {
+            overflow-x: visible;  /* 确保按钮不被裁剪 */
+        }
+
+        /* 折叠按钮样式：绝对定位在侧边栏右上角（右侧边缘） */
+        .collapse-btn {
+            position: absolute;
+            bottom: 430px;
+            right: 12px;          /* 距离右侧边缘 12px */
+            width: 40px;
+            height: 40px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            z-index: 30;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 悬停效果 */
+        .collapse-btn:hover {
+        filter: brightness(1.6);
+        transform: scale(1.15);
+        }
+
+        /* 折叠后按钮位置微调，并增强背景使其更明显 */
+        .sidebar.collapsed .collapse-btn {
+            right: 8px;
+            bottom: 430px;
+            background: #4f8ef7;
+            color: white;
+            /*box-shadow: 0 4px 12px rgba(79, 142, 247, 0.5);*/
+        } 
+
+
+        /* 折叠后隐藏所有文字区域，避免重叠 */
+        .sidebar.collapsed .brand-text,
+        .sidebar.collapsed .menu-text,
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+        .sidebar.collapsed .brand {
+            gap: 0;
+            justify-content: center;
+            padding: 8px 0;          /* 只保留上下内边距，去掉左右内边距 */
+        }
+        /* 折叠后菜单项只显示图标并居中 */
+        .sidebar.collapsed .menu-item {
+            gap: 0;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .menu-ico {
+            margin: 0;
+        }
+        
+        /**/
+        .hero-meta {
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(79,142,247,0.10);
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--muted);
+        }
+        .meta-line {
+            margin-bottom: 6px;
+            }
+        .meta-line:last-child {
+            margin-bottom: 0;
+            }
+        .meta-line strong {
+            color: var(--primary-2);
+            font-weight: 700;
+            }
+        @media (max-width: 720px) { 
+            .hero-meta {
+                font-size: 12px;
+                }
+            }
+
+
+</style>
+</head>
+<body>
+<div class="app"><aside class="sidebar" id="sidebar"><div class="brand">
+    
+    <div class="brand-text">
+        <strong>AI职业规划智能体</strong>
+        <span>岗位画像 · 图谱 · 报告导出</span>
+    </div>
+</div>
+<button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()" style="position: absolute; top: 15px; right: 12px; z-index: 100; background: rgba(255,255,255,.06); color: white; border: none; border-radius: 12px; width: 28px; height: 35px; font-size: 18px; cursor: pointer;">◀</button>
+<nav class="menu" id="menu"><button class="menu-item active" data-target="home"><span class="menu-ico">首页</span><span class="menu-text"><strong>首页</strong></span></button><button class="menu-item" data-target="jobs"><span class="menu-ico">画像</span><span class="menu-text"><strong>岗位画像</strong><small>分页浏览与点击详情</small></span></button><button class="menu-item" data-target="graph"><span class="menu-ico">图谱</span>
+    <span class="menu-text"><strong>关系图谱</strong><small>点击岗位看关系</small></span></button>
+    <button class="menu-item" data-target="upload"><span class="menu-ico">上传</span><span class="menu-text"><strong>简历上传</strong><small>支持文件与文本</small></span></button>
+        <button class="menu-item" data-target="report"><span class="menu-ico">报告</span><span class="menu-text"><strong>职业报告</strong><small>生成与导出 PDF</small></span></button></nav>
+        <div class="sidebar-footer"><div> 点击岗位后，右侧会刷新岗位详情和关系图谱。</div></div></aside>
+        <main class="main"><header class="topbar"><div class="title-wrap"><p class="eyebrow">职业规划与岗位推荐系统</p><h1 class="page-title">AI职业规划智能体</h1></div>
+            <div class="actions"><div class="pill" style="background: rgba(79,142,247,0.12);"><strong id="topbarUsername">加载中...</strong></div>
+        <button class="btn btn-secondary btn-small" onclick="logout()">退出登录</button></header>
+                <section class="section hero section-anchor" id="home">
+                 <div class="card hero-copy">
+
+                    <div class="hero-actions-bar">
+                        <button class="btn btn-primary" onclick="generateReport()">生成报告</button>
+                        <button class="btn btn-secondary" onclick="exportPDF()">导出PDF</button>
+                        <button class="btn btn-ghost" onclick="resetAll()">重置</button>
+                    </div>
+
+                    <!-- 统计卡片 -->
+                    <div class="hero-stats">
+                        <div class="stat"><strong id="jobTotalKpi">—</strong><span>岗位库总量</span></div>
+                        <div class="stat"><strong id="relationTotalKpi">—</strong><span>图谱关系数</span></div>
+                        <div class="stat"><strong id="reportStateKpi">未生成</strong><span>报告状态</span></div>
+                    </div>
+
+                    <!-- 新增：数据摘要行（纯事实，无指引） -->
+                    <div class="hero-meta">
+                        <div class="meta-line">用户：<strong id="metaStudentName">—</strong></div>
+                        <div class="meta-line">报告时间：<span id="metaReportTime">—</span> | 分析次数：<span id="metaAnalysisCount">—</span></div>
+                    </div>
+                </div>
+                        <div class="card hero-side"><div class="panel-head"><div><h3>核心概览</h3></div></div>
+                        <div class="match-ring"><div class="ring"><div class="ring-inner"><strong id="matchScoreRing">—</strong><span>总体匹配度</span></div></div>
+                        <div class="match-info"><p class="big">AI 报告生成入口</p><p id="heroSummary">请先上传简历或文本，再生成职业报告。报告会自动展示学生画像、岗位匹配、职业路径和行动计划。</p></div></div>
+                        <div class="mini-grid"><div class="mini-card"><strong>简历上传</strong><span>支持 PDF / TXT 文件，也支持文本直接粘贴。</span></div>
+                        <div class="mini-card"><strong>岗位图谱</strong><span>点选岗位后，只显示该岗位相关路径和关系。</span></div></div></div></section>
+                        <section class="section content-grid section-anchor" id="jobs"><div class="card section-card jobs-full"><div class="section-head">
+                            <div><h2>岗位画像</h2><p>分页浏览岗位，点击任意岗位即可展开完整画像，并在右侧抽屉查看详细内容。</p></div></div>
+                            <div class="toolbar"><div class="stats"><span>当前页 <strong id="pageInfo">1 / 1</strong></span><span>·</span><span>已加载 <strong id="jobLoadedCount">0</strong> 个岗位</span></div>
+                            <div class="search-like"><input id="jobSearch" placeholder="输入岗位关键词（只影响列表过滤）" /></div></div>
+                            <div class="job-grid" id="jobGrid"></div><div class="pagination" id="pagination"></div></div></section><section class="section graph-layout section-anchor" id="graph">
+            <div class="graph-left-stack">
+                <div class="card graph-card graph-wrap">
+                    <div class="section-head">
+                        <div>
+                            <h2>岗位关系图谱</h2>
+                            <p>不做慢速自动播放，直接按当前岗位加载局部图谱；点击节点会回到对应岗位详情</p>
+                        </div>
+                    </div>
+                    <div class="graph-toolbar">
+                        <button class="btn btn-secondary btn-small" onclick="loadGraphForSelectedJob()">刷新当前图谱</button>
+                        <button class="btn btn-secondary btn-small" onclick="loadFullGraph()">查看全量图谱</button>
+                        <button class="btn btn-ghost btn-small" onclick="highlightSelectedRelations()">高亮当前路径</button>
+                    </div>
+                    <div id="graphChart"></div>
+                </div>
+
+                <section class="section card upload-card section-anchor" id="upload">
+                    <div class="section-head">
+                        <div>
+                            <h2>简历上传</h2>
+                            <p>支持文件上传与文本提交。上传后再点“生成报告”。</p>
+                        </div>
+                        <div class="section-badge">支持 PDF / TXT / 文本</div>
+                    </div>
+                    <div class="upload-grid">
+                        <div class="upload-box">
+                            <h3>上传简历文件</h3>
+                            <p class="upload-note">上传简历文件后，再点击“生成报告”。</p>
+                            <input class="file-input" type="file" id="resumeFile" />
+                            <div class="upload-actions">
+                                <button class="btn btn-primary" onclick="uploadResume()">上传文件</button>
+                                <span id="resumeUploadStatus" class="pill">未上传</span>
+                            </div>
+                        </div>
+                        <div class="upload-box">
+                            <h3>文本录入</h3>
+                            <p class="upload-note">直接提交纯文本内容即可。</p>
+                            <textarea class="text-area" id="resumeText" placeholder="输入学生简历内容、项目经历、实习经历、竞赛经历、证书等..."></textarea>
+                            <div class="upload-actions">
+                                <button class="btn btn-secondary" onclick="uploadText()">提交文本</button>
+                                <button class="btn btn-ghost" onclick="fillDemoText()">填充示例</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="card section-card">
+                <div class="section-head">
+                    <div>
+                        <h2>路径详情</h2>
+                        <p>只显示当前岗位相关路径，不占用过多空间。</p>
+                    </div>
+                </div>
+                <div class="relation-list" id="relationList">
+                    <div class="report-empty">请选择一个岗位，或在图谱中点击一个节点。<br />这里会显示关系类型、技能差距、匹配分数和原因。</div>
+                </div>
+            </div>
+        </section>
+<section class="section card report-card section-anchor" id="report"><div class="report-toolbar"><div class="left"><strong>职业分析报告</strong><span>首页核心功能：生成报告、结构化展示、导出 PDF。</span></div><div class="actions"><button class="btn btn-primary btn-small" onclick="generateReport()">生成报告</button><button class="btn btn-secondary btn-small" onclick="exportPDF()">导出PDF</button></div></div><div id="reportStatus" class="report-status hidden"></div><div class="report-content-shell"><div id="reportLoadingInline" class="report-loading-inline hidden"><div class="report-loading-card"><div class="spinner"></div><div><div style="font-weight:800; font-size:15px;">正在生成报告...</div><div id="reportLoadingText" style="margin-top:4px; color:#64748b; font-size:12px;">请稍候</div></div></div></div><div id="reportContent"><div class="report-empty">这里会展示生成后的职业报告。<br />内容按“学生画像 / 岗位匹配 /职业路径 /行动计划”分块排版，不显示 JSON 原文。 </div></div></div></section></main>
+</div><div class="job-drawer" id="jobDrawer"><div class="drawer-handle" id="jobDrawerHandle">岗位</div><div class="drawer-panel"><div class="drawer-head"><div><p class="eyebrow" style="margin:0 0 6px;">岗位详情抽屉</p><h2 id="drawerTitle">请选择岗位</h2></div><button class="btn btn-ghost btn-small drawer-close-btn" id="jobDrawerClose">收起</button></div><div class="drawer-meta" id="drawerMeta">点击左侧岗位卡片后，这里会显示完整的岗位画像。</div><div class="drawer-body"><div class="detail-content" id="jobDetail"><div class="report-empty">先点击一个岗位卡片。<br />这里会显示岗位名称、技能、证书、创新、学习、抗压、沟通、实习能力、岗位说明与评分。 </div></div></div></div>
+</div><div class="loading-mask" id="loadingMask"><div class="loading-card"><div class="spinner"></div><div><div style="font-weight:800; font-size:15px;">正在处理...</div><div id="loadingText" style="margin-top:4px; color:#64748b; font-size:12px;">请稍候</div></div></div>
+</div><div class="toast" id="toast"></div>
+<div id="pdfTemplate" aria-hidden="true"></div>
+<script>
+    function updateMetaInfo() {
+    const user = localStorage.getItem('current_user');
+    let studentName = "未登录";
+    let username = "未登录";
+    if (user) {
+        try {
+            const u = JSON.parse(user);
+            studentName = u.username || "用户";
+            username = u.username || "未登录";
+        } catch(e) {}
+    }
+    document.getElementById('metaStudentName').innerText = studentName;
+    const topbarNameEl = document.getElementById('topbarUsername');
+    if (topbarNameEl) topbarNameEl.innerText = studentName;
+
+    // 独立存储的键名
+    const reportTimeKey = `lastReportTime_${username}`;
+    const countKey = `analysisCount_${username}`;
+    
+    // 读取当前用户的独立数据，如果没有则保持原有全局键（向后兼容）
+    let reportTime = localStorage.getItem(reportTimeKey);
+    let count = localStorage.getItem(countKey);
+    
+    if (reportTime === null) {
+        // 尝试从旧的全局键读取（迁移旧数据）
+        reportTime = localStorage.getItem('lastReportTime');
+        if (reportTime) localStorage.setItem(reportTimeKey, reportTime);
+    }
+    if (count === null) {
+        count = localStorage.getItem('analysisCount');
+        if (count) localStorage.setItem(countKey, count);
+    }
+    
+    // 将独立数据同步到全局键（便于其他函数读写）
+    if (reportTime) localStorage.setItem('lastReportTime', reportTime);
+    else localStorage.removeItem('lastReportTime');
+    if (count) localStorage.setItem('analysisCount', count);
+    else localStorage.setItem('analysisCount', '0');
+    
+    document.getElementById('metaReportTime').innerText = reportTime || "暂无";
+    document.getElementById('metaAnalysisCount').innerText = count || "0";
+}
+
+
+
+    const state = {
+        jobs: [],
+        relationsAll: [],
+        selectedJobId: null,
+        selectedJob: null,
+        selectedRelations: [],
+        report: null,
+        page: 1,
+        pageSize: 8,
+        searchText: "",
+        chart: null
+    };
+      
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const btn = document.getElementById("collapseBtn");
+        if (!sidebar || !btn) return;  // 防止元素不存在
+
+        const isCollapsed = sidebar.classList.toggle("collapsed");
+    
+        if (isCollapsed) {
+            btn.textContent = "▶";
+        } else {
+            btn.textContent = "◀";
+    }
+}
+
+
+
+
+
+    // Authentication check - redirect to login if not authenticated
+    async function checkAuthentication() {
+        console.log('=== checkAuthentication started ===');
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        let jwtToken = localStorage.getItem('jwt_token');
+        let currentUser = localStorage.getItem('current_user');
+
+        console.log('Auth state:', { isLoggedIn, jwtToken: jwtToken ? 'exists' : 'missing', currentUser: currentUser ? 'exists' : 'missing' });
+
+        // Check for token in URL parameters (from login redirect)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+
+        console.log('URL token check:', { urlToken: urlToken ? 'exists' : 'missing', currentUrl: window.location.href });
+
+        // If token found in URL, save it to localStorage and clean the URL
+        if (urlToken && !jwtToken) {
+            console.log('Found token in URL, saving to localStorage');
+            localStorage.setItem('jwt_token', urlToken);
+            localStorage.setItem('isLoggedIn', 'true');
+
+            // If current_user doesn't exist, create a basic one
+            if (!currentUser) {
+                const userInfo = {
+                    username: '用户', // 临时用户名，后续会通过/auth/info获取真实信息
+                    role: 'user',
+                    loginTime: new Date().toISOString()
+                };
+                console.log('Creating temporary user info:', userInfo);
+                const userInfoStr = JSON.stringify(userInfo);
+                localStorage.setItem('current_user', userInfoStr);
+                currentUser = userInfoStr; // Update the local variable
+            }
+
+            jwtToken = urlToken;
+
+            // Clean URL by removing token parameter
+            const cleanUrl = window.location.origin + window.location.pathname;
+            console.log('Cleaning URL from:', window.location.href, 'to:', cleanUrl);
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+
+        // If not logged in or missing token/user data, redirect to login
+        if (!isLoggedIn || !jwtToken || !currentUser) {
+            console.log('Auth check failed, redirecting to login:', {
+                isLoggedIn: !!isLoggedIn,
+                jwtToken: !!jwtToken,
+                currentUser: !!currentUser
+            });
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        // Validate token with backend - simplified version
+        try {
+            console.log('Validating token with backend...');
+
+            // Simple fetch with token in header
+            const response = await fetch('/auth/info', {
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken
+                }
+            });
+
+            if (!response.ok) {
+                console.log('Backend validation failed with status:', response.status);
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            const data = await response.json();
+            console.log('Backend validation response:', data);
+
+            if (data.code !== 200) {
+                console.log('Backend validation failed:', data);
+                // Token invalid or expired, force re-login
+                localStorage.removeItem('current_user');
+                localStorage.removeItem('jwt_token');
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = 'login.html';
+                return false;
+            }
+            console.log('Backend validation successful');
+
+            // Update user info from backend response
+            if (data.username || data.role) {
+                const updatedUserInfo = {
+                    username: data.username || '用户',
+                    role: data.role || 'user',
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('current_user', JSON.stringify(updatedUserInfo));
+            }
+            } catch (e) {
+                console.error('Backend validation error:', e);
+             // Network error, force re-login
+                localStorage.clear();
+                 window.location.href = 'login.html';
+            return false;
+        }
+
+        console.log('=== checkAuthentication completed successfully ===');
+
+        // Optional: Validate token format (basic check)
+        try {
+            const userData = JSON.parse(currentUser);
+            if (!userData.username || !userData.loginTime) {
+                // Invalid user data, force re-login
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return false;
+            }
+        } catch (e) {
+            // Invalid JSON in user data, force re-login
+            localStorage.clear();
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        return true;
+    }
+
+    // Check authentication immediately when page loads
+    console.log('=== Page loaded, starting authentication check ===');
+    checkAuthentication().then(isAuthenticated => {
+    console.log('Authentication check result:', isAuthenticated);
+    if (isAuthenticated) {
+        //console.log('Authentication successful, initializing system...');
+        // Continue with other initialization...
+        init();
+    } else {
+        console.log('Authentication failed, user will be redirected to login page');
+        // The checkAuthentication function already redirects to login page
+        // Stop further execution by throwing an error
+        throw new Error('Authentication required');
+    }
+    }).catch(error => {
+    console.error('Authentication check failed with error:', error);
+    //到这里
+    // Don't auto-redirect here, let checkAuthentication handle it
+});
+    // 后面要删掉
+    //console.log('=== 跳过认证检查，直接初始化 ===');
+    // 设置默认的 localStorage 值（可选，防止某些地方报错）
+    //if (!localStorage.getItem('isLoggedIn')) {
+        //localStorage.setItem('isLoggedIn', 'true');
+    //}
+    //if (!localStorage.getItem('jwt_token')) {
+      //  localStorage.setItem('jwt_token', 'dev_token_skip');
+    //}
+    //init();
+    //到这里全部
+
+    const els = {
+        
+        sidebar: document.getElementById("sidebar"),
+        collapseBtn: document.getElementById("collapseBtn"),
+        jobGrid: document.getElementById("jobGrid"),
+        pagination: document.getElementById("pagination"),
+        jobDetail: document.getElementById("jobDetail"),
+        relationList: document.getElementById("relationList"),
+        reportContent: document.getElementById("reportContent"),
+        reportStatus: document.getElementById("reportStatus"),
+        reportLoadingInline: document.getElementById("reportLoadingInline"),
+        reportLoadingText: document.getElementById("reportLoadingText"),
+        loadingMask: document.getElementById("loadingMask"),
+        loadingText: document.getElementById("loadingText"),
+        toast: document.getElementById("toast"),
+        jobTotalKpi: document.getElementById("jobTotalKpi"),
+        relationTotalKpi: document.getElementById("relationTotalKpi"),
+        reportStateKpi: document.getElementById("reportStateKpi"),
+        matchScoreRing: document.getElementById("matchScoreRing"),
+        heroSummary: document.getElementById("heroSummary"),
+        pageInfo: document.getElementById("pageInfo"),
+        jobLoadedCount: document.getElementById("jobLoadedCount"),
+        resumeUploadStatus: document.getElementById("resumeUploadStatus"),
+        graphChart: document.getElementById("graphChart"),
+        pdfTemplate: document.getElementById("pdfTemplate"),
+        jobDrawer: document.getElementById("jobDrawer"),
+        jobDrawerClose: document.getElementById("jobDrawerClose"),
+        jobDrawerHandle: document.getElementById("jobDrawerHandle"),
+        drawerTitle: document.getElementById("drawerTitle"),
+        drawerMeta: document.getElementById("drawerMeta")
+    };
+
+    function setBusy(on, text = "请稍候") {
+        els.loadingMask.style.display = on ? "flex" : "none";
+        els.loadingText.textContent = text;
+    }
+
+    function setReportLoading(on, text = "正在生成报告...") {
+        if (!els.reportLoadingInline) return;
+        els.reportLoadingInline.classList.toggle("hidden", !on);
+        if (els.reportLoadingText) els.reportLoadingText.textContent = text;
+    }
+
+    
+    function setAllMiniCardsExpanded(expanded) {
+        if (!els.reportContent) return;
+        const cards = els.reportContent.querySelectorAll(".report-mini-item.mini-collapsible");
+        cards.forEach(card => {
+            const btn = card.querySelector(".mini-toggle-btn");
+            card.classList.toggle("expanded", !!expanded);
+            if (btn) {
+                btn.textContent = expanded ? "收起" : "点击展开";
+                btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+            }
+        });
+    }
+
+    function prepareMiniCards() {
+        if (!els.reportContent) return;
+        const cards = els.reportContent.querySelectorAll(".report-mini-item");
+        cards.forEach(card => {
+            const titleEl = card.querySelector("strong");
+            const contentEl = card.querySelector(".report-mini-content");
+            if (!titleEl || !contentEl) return;
+
+            const fullText = (contentEl.textContent || "").trim();
+            if (!fullText) return;
+
+            const oldBtn = card.querySelector(".mini-toggle-btn");
+            if (oldBtn) oldBtn.remove();
+
+            card.dataset.fullText = fullText;
+            card.classList.remove("expanded");
+            card.classList.add("mini-collapsible");
+
+            contentEl.textContent = fullText;
+
+            
+            requestAnimationFrame(() => {
+                const isOverflowing = contentEl.scrollHeight > contentEl.clientHeight + 4;
+                if (isOverflowing && fullText !== "暂无") {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "mini-toggle-btn";
+                    btn.textContent = "点击展开";
+                    btn.setAttribute("aria-expanded", "false");
+                    card.appendChild(btn);
+                } else {
+                    card.classList.remove("mini-collapsible");
+                }
+            });
+        });
+    }
+
+    function bindMiniCardToggle() {
+        if (!els.reportContent || els.reportContent.dataset.toggleBound === "1") return;
+        els.reportContent.dataset.toggleBound = "1";
+        els.reportContent.addEventListener("click", (event) => {
+            const btn = event.target.closest(".mini-toggle-btn");
+            if (!btn) return;
+
+            const card = btn.closest(".report-mini-item.mini-collapsible");
+            if (!card || !els.reportContent.contains(card)) return;
+
+            const expanded = !card.classList.contains("expanded");
+            card.classList.toggle("expanded", expanded);
+            btn.textContent = expanded ? "收起" : "点击展开";
+            btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+        });
+    }
+    async function nextFrame() {
+        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    }
+
+
+        function openJobDrawer() {
+            if (els.jobDrawer) els.jobDrawer.classList.add("open");
+    }
+
+        function closeJobDrawer() {
+            if (els.jobDrawer) els.jobDrawer.classList.remove("open");
+    }
+
+        function updateDrawerHeader(job) {
+            if (!job) {
+            if (els.drawerTitle) els.drawerTitle.textContent = "请选择岗位";
+            if (els.drawerMeta) els.drawerMeta.textContent = "点击左侧岗位卡片后，这里会显示完整的岗位画像。";
+            return;
+        }
+            if (els.drawerTitle) els.drawerTitle.textContent = job.jobName || "未知岗位";
+             if (els.drawerMeta) {
+                const score = job.score !== undefined && job.score !== null ? `岗位评分：${job.score}` : "";
+                const id = job.id !== undefined && job.id !== null ? `岗位ID：${job.id}` : "";
+                const desc = job.description ? job.description : "";
+                els.drawerMeta.innerHTML = [score, id, desc].filter(Boolean).map(t => `<div>${escapeHtml(t)}</div>`).join("");
+        }
+    }
+
+
+    function bindDrawer() {
+        if (els.jobDrawerClose) {
+            els.jobDrawerClose.addEventListener("click", closeJobDrawer);
+        }
+        if (els.jobDrawerHandle) {
+            els.jobDrawerHandle.addEventListener("click", openJobDrawer);
+        }
+    }
+
+    function metricFromValue(value) {
+        if (value === null || value === undefined || value === "") return 30;
+        if (typeof value === "number") return Math.max(0, Math.min(100, value));
+        const arr = splitTokens(value);
+        let score = 35 + arr.length * 10;
+        if (String(value).length > 40) score += 8;
+        return Math.max(20, Math.min(100, score));
+    }
+
+    function radarValuesFromReport(report) {
+        const student = report?.studentProfile || {};
+        return [
+            metricFromValue(student.professionalSkills),
+            metricFromValue(student.certificates),
+            metricFromValue(student.innovationAbilities),
+            metricFromValue(student.learningAbilities),
+            metricFromValue(student.stressResistance),
+            metricFromValue(student.communicationSkills),
+            metricFromValue(student.internshipAbilities)
+        ];
+    }
+
+    function renderRadarChart(report) {
+        const el = document.getElementById("reportRadarChart");
+        if (!el) return;
+        const chart = echarts.getInstanceByDom(el) || echarts.init(el);
+        const values = report ? radarValuesFromReport(report) : [0,0,0,0,0,0,0];
+        chart.setOption({
+            animation: false,
+            tooltip: { trigger: "item" },
+            radar: {
+                indicator: [
+                    { name: "专业技能", max: 100 },
+                    { name: "证书", max: 100 },
+                    { name: "创新能力", max: 100 },
+                    { name: "学习能力", max: 100 },
+                    { name: "抗压能力", max: 100 },
+                    { name: "沟通能力", max: 100 },
+                    { name: "实习能力", max: 100 }
+                ],
+                splitNumber: 5,
+                axisName: { color: "#334155", fontSize: 12 },
+                splitLine: { lineStyle: { color: "rgba(79,142,247,.12)" } },
+                splitArea: { areaStyle: { color: ["rgba(79,142,247,.02)", "rgba(79,142,247,.05)"] } },
+                axisLine: { lineStyle: { color: "rgba(79,142,247,.12)" } }
+            },
+            series: [{
+                type: "radar",
+                data: [{
+                    value: values,
+                    name: "能力分布",
+                    areaStyle: { color: "rgba(79,142,247,.18)" },
+                    lineStyle: { color: "#4f8ef7", width: 3 },
+                    itemStyle: { color: "#4f8ef7" }
+                }]
+            }]
+        }, true);
+        window.addEventListener("resize", () => chart.resize(), { once: true });
+    }
+
+    function clampText(text, maxLen = 120) {
+        const str = String(text ?? "");
+        return str.length > maxLen ? str.slice(0, maxLen) + "…" : str;
+    }
+
+    function csvList(arr) {
+        return (arr || []).map(v => String(v)).filter(Boolean);
+    }
+
+    function pdfTextArray(value) {
+        return splitTokens(value).filter(Boolean);
+    }
+
+    function pdfTopJobs(matchedJobs) {
+        return (matchedJobs || []).slice(0, 3).map(j => ({
+            name: j.jobName || "—",
+            score: j.matchScore ?? "—",
+            strengths: csvList(splitTokens(j.strengths)).slice(0, 2).join("；") || "—",
+            gaps: csvList(splitTokens(j.gaps)).slice(0, 2).join("；") || "—"
+        }));
+    }
+
+    function safeArray(v) {
+        return Array.isArray(v) ? v : [];
+    }
+
+    function makePdfDoc() {
+        const { jsPDF } = window.jspdf;
+        return new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+    }
+
+    function pdfAddPageHeader(doc, title, subtitle, pageNo) {
+        doc.setFillColor(248, 251, 255);
+        doc.rect(0, 0, 210, 297, "F");
+        doc.setDrawColor(79, 142, 247);
+        doc.setLineWidth(0.8);
+        doc.line(14, 18, 196, 18);
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text(title, 14, 30);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(71, 85, 105);
+        const sub = doc.splitTextToSize(subtitle, 182);
+        doc.text(sub, 14, 38);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`第 ${pageNo} 页`, 181, 286, { align: "right" });
+    }
+
+    function pdfEnsureSpace(doc, y, need = 12) {
+        if (y + need > 280) {
+            doc.addPage();
+            return 18;
+        }
+        return y;
+    }
+
+    function pdfAddWrappedText(doc, text, x, y, maxWidth, fontSize = 12, lineHeight = 6, bold = false) {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", bold ? "bold" : "normal");
+        const lines = doc.splitTextToSize(String(text ?? ""), maxWidth);
+        doc.text(lines, x, y);
+        return y + lines.length * lineHeight;
+    }
+
+    function pdfAddBulletList(doc, items, x, y, maxWidth, fontSize = 11, lineHeight = 5.8) {
+        const list = safeArray(items);
+        if (!list.length) {
+            return pdfAddWrappedText(doc, "暂无", x, y, maxWidth, fontSize, lineHeight);
+        }
+        for (const item of list) {
+            y = pdfEnsureSpace(doc, y, 10);
+            const lines = doc.splitTextToSize(String(item), maxWidth - 4);
+            doc.text("•", x, y);
+            doc.text(lines, x + 4, y);
+            y += Math.max(1, lines.length) * lineHeight;
+        }
+        return y;
+    }
+
+    function pdfAddChipRow(doc, items, x, y, maxWidth) {
+        const list = safeArray(items);
+        if (!list.length) return y;
+        let cx = x;
+        let rowH = 8;
+        for (const item of list) {
+            const txt = String(item);
+            const w = doc.getTextWidth(txt) + 8;
+            if (cx + w > x + maxWidth) {
+                y += rowH + 2;
+                cx = x;
+            }
+            doc.setFillColor(230, 239, 255);
+            doc.setDrawColor(180, 205, 255);
+            doc.roundedRect(cx, y, w, 8, 4, 4, "FD");
+            doc.setFontSize(9);
+            doc.setTextColor(29, 78, 216);
+            doc.text(txt, cx + 4, y + 5.5);
+            cx += w + 4;
+        }
+        return y + rowH + 2;
+    }
+
+    function pdfAddTable(doc, headers, rows, x, y, widths) {
+        const rowH = 8;
+        doc.setFillColor(219, 234, 254);
+        doc.setDrawColor(191, 219, 254);
+        let curX = x;
+        headers.forEach((h, i) => {
+            doc.rect(curX, y, widths[i], rowH, "FD");
+            doc.setFontSize(9);
+            doc.setTextColor(29, 78, 216);
+            doc.text(String(h), curX + 2, y + 5.3);
+            curX += widths[i];
+        });
+        y += rowH;
+        doc.setTextColor(15, 23, 42);
+        rows.forEach(row => {
+            const heights = row.map((cell, i) => {
+                const lines = doc.splitTextToSize(String(cell), widths[i] - 4);
+                return Math.max(8, lines.length * 4.4 + 2);
+            });
+            const h = Math.max(...heights);
+            y = pdfEnsureSpace(doc, y, h + 6);
+            curX = x;
+            row.forEach((cell, i) => {
+                doc.setDrawColor(226, 232, 240);
+                doc.rect(curX, y, widths[i], h);
+                const lines = doc.splitTextToSize(String(cell), widths[i] - 4);
+                doc.setFontSize(8.8);
+                doc.setTextColor(51, 65, 85);
+                doc.text(lines, curX + 2, y + 5);
+                curX += widths[i];
+            });
+            y += h;
+        });
+        return y + 4;
+    }
+
+    function showToast(message, type = "info") {
+        els.toast.textContent = message;
+        els.toast.classList.add("show");
+        els.toast.style.background = type === "error" ? "rgba(239,68,68,.92)" : "rgba(15,23,42,.92)";
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => els.toast.classList.remove("show"), 2600);
+    }
+
+    function safeText(v, fallback = "—") {
+        if (v === null || v === undefined || v === "") return fallback;
+        return String(v);
+    }
+
+    function escapeHtml(str) {
+        return String(str ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function splitTokens(input) {
+        if (!input) return [];
+        if (Array.isArray(input)) return input.flatMap(splitTokens).filter(Boolean);
+        return String(input)
+            .split(/[、,，;；\n]/)
+            .map(s => s.trim())
+            .filter(Boolean);
+    }
+
+    function deepExtract(value, depth = 0) {
+        if (value === null || value === undefined || depth > 8) return value;
+        if (Array.isArray(value)) return value;
+        if (typeof value !== "object") return value;
+        if (Object.prototype.hasOwnProperty.call(value, "data")) {
+            return deepExtract(value.data, depth + 1);
+        }
+        return value;
+    }
+
+    function normalizeResponse(payload) {
+        return deepExtract(payload);
+    }
+
+    async function requestJson(url, options = {}) {
+        const res = await fetch(url, options);
+        let json;
+        try {
+            json = await res.json();
+        } catch (e) {
+            throw new Error(`接口返回非 JSON：${url}`);
+        }
+        if (!res.ok) throw new Error(json?.message || `请求失败：${res.status}`);
+        if (json && typeof json.code !== "undefined" && Number(json.code) !== 200) {
+            throw new Error(json.message || "后端返回失败");
+        }
+        return normalizeResponse(json);
+    }
+
+    // 带认证的API请求函数
+    async function requestJsonWithAuth(url, options = {}) {
+        const jwtToken = localStorage.getItem('jwt_token');
+        if (!jwtToken) {
+            throw new Error('未找到认证token，请重新登录');
+        }
+
+        const authOptions = {
+            ...options,
+            headers: {
+                ...options.headers,
+                "Authorization": "Bearer " + jwtToken
+            }
+        };
+
+        return requestJson(url, authOptions);
+    }
+
+    function setActiveMenu(target) {
+    document.querySelectorAll(".menu-item").forEach(btn => {
+        if (btn.dataset.target === target) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+}
+
+   function scrollToSection(id) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const topbar = document.querySelector('.topbar');
+    const offset = topbar ? topbar.offsetHeight + 20 : 30;
+    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+        top: elementPosition - offset,
+        behavior: "smooth"
+    });
+    
+    // 滚动动画结束后强制更新一次高亮（防止动画过程中中断）
+    setTimeout(() => {
+        const activeBtn = document.querySelector(`.menu-item[data-target="${id}"]`);
+        if (activeBtn && !activeBtn.classList.contains('active')) {
+            setActiveMenu(id);
+        }
+    }, 300);
+}
+
+  function bindMenu() {
+    // 1. 菜单点击跳转（保留原有偏移逻辑）
+    document.querySelectorAll(".menu-item").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            scrollToSection(btn.dataset.target);
+        });
+    });
+
+    // 2. 基于滚动位置更新高亮（不依赖 IntersectionObserver）
+    function updateActiveMenuOnScroll() {
+        const sections = ["home", "jobs", "graph", "upload", "report"];
+        let bestMatch = null;
+        let minDistance = Infinity;
+
+        // 获取顶部栏高度（动态）
+        const topbar = document.querySelector('.topbar');
+        const offset = topbar ? topbar.offsetHeight + 10 : 50;
+
+        for (const id of sections) {
+            const section = document.getElementById(id);
+            if (!section) continue;
+
+            const rect = section.getBoundingClientRect();
+            // 计算 section 顶部距离视口顶部（考虑偏移）的绝对值
+            const distance = Math.abs(rect.top - offset);
+            
+            // 如果 section 顶部在偏移线以下且距离最近，则选中
+            // 额外规则：如果 section 已经滚过视口顶部很多（rect.top < -200），则不选
+            if (rect.top - offset < 200 && distance < minDistance) {
+                minDistance = distance;
+                bestMatch = id;
+            }
+        }
+
+        // 如果找到了最佳匹配，且与当前激活不同，才更新
+        if (bestMatch) {
+            const currentActive = document.querySelector('.menu-item.active')?.dataset.target;
+            if (currentActive !== bestMatch) {
+                setActiveMenu(bestMatch);
+            }
+        }
+    }
+
+    // 3. 监听滚动事件（使用 requestAnimationFrame 节流）
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateActiveMenuOnScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    // 4. 页面加载和 resize 时也更新一次
+    window.addEventListener('resize', () => updateActiveMenuOnScroll());
+    // 初始调用一次，确保高亮正确
+    setTimeout(updateActiveMenuOnScroll, 100);
+}
+    function updateKpis() {
+        els.jobTotalKpi.textContent = state.jobs.length ? String(state.jobs.length) : "—";
+        els.relationTotalKpi.textContent = state.relationsAll.length ? String(state.relationsAll.length) : "—";
+        els.reportStateKpi.textContent = state.report ? "已生成" : "未生成";
+        const score = state.report?.jobMatchAnalysis?.overallMatchScore;
+        els.matchScoreRing.textContent = score !== undefined && score !== null ? `${Math.round(Number(score))}%` : "—";
+    }
+
+    function tokenizeCountScore(value) {
+        const s = String(value ?? "");
+        if (!s.trim()) return 32;
+        const count = splitTokens(s).length;
+        let score = 30 + count * 10;
+        if (s.length > 36) score += 8;
+        return Math.max(20, Math.min(100, score));
+    }
+
+    function renderJobs() {
+        const keyword = state.searchText.trim().toLowerCase();
+        const filtered = keyword
+            ? state.jobs.filter(j => safeText(j.jobName, "").toLowerCase().includes(keyword))
+            : state.jobs;
+
+        const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+        if (state.page > totalPages) state.page = totalPages;
+
+        const start = (state.page - 1) * state.pageSize;
+        const pageJobs = filtered.slice(start, start + state.pageSize);
+
+        els.pageInfo.textContent = `${state.page} / ${totalPages}`;
+        els.jobLoadedCount.textContent = String(filtered.length);
+
+        els.jobGrid.innerHTML = pageJobs.map(job => {
+            const active = String(job.id) === String(state.selectedJobId);
+            return ` <article class="job-card ${active ? "active" : ""}" data-id="${escapeHtml(job.id)}"><div class="job-top"><h3 class="job-name">${escapeHtml(job.jobName || "未知岗位")}</h3><div class="job-id">ID ${escapeHtml(job.id ?? "—")}</div></div><p class="job-snippet">${active ? "当前已选中：会联动岗位详情与图谱。" : "点击查看完整岗位画像与关联图谱。"}</p><div class="job-footer"><div class="tag-row"><span class="tag gray">岗位画像</span><span class="tag gray">点击展开</span></div><span class="tag ${active ? "green" : "gray"}">${active ? "已选择" : "查看详情"}</span></div></article>`;
+        }).join("");
+
+        els.jobGrid.querySelectorAll(".job-card").forEach(card => {
+            card.addEventListener("click", () => selectJob(card.dataset.id));
+        });
+
+        const pages = [];
+        const visibleCount = 7;
+        const half = Math.floor(visibleCount / 2);
+        let startPage = Math.max(1, state.page - half);
+        let endPage = Math.min(totalPages, startPage + visibleCount - 1);
+        startPage = Math.max(1, endPage - visibleCount + 1);
+
+        pages.push(`<button class="page-btn" ${state.page === 1 ? "disabled" : ""} data-page="${state.page - 1}">‹</button>`);
+        for (let p = startPage; p <= endPage; p++) {
+            pages.push(`<button class="page-btn ${p === state.page ? "active" : ""}" data-page="${p}">${p}</button>`);
+        }
+        pages.push(`<button class="page-btn" ${state.page === totalPages ? "disabled" : ""} data-page="${state.page + 1}">›</button>`);
+
+        els.pagination.innerHTML = pages.join("");
+        els.pagination.querySelectorAll(".page-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (btn.disabled) return;
+                const next = Number(btn.dataset.page);
+                if (!Number.isNaN(next)) {
+                    state.page = Math.min(Math.max(next, 1), totalPages);
+                    renderJobs();
+                }
+            });
+        });
+    }
+
+    function renderSelectedJobSummary() {
+        const job = state.selectedJob;
+        if (!job) {
+            els.heroSummary.textContent = "请先从岗位列表中选择一个岗位";
+            return;
+        }
+        const parts = [];
+        if (job.jobName) parts.push(`当前岗位：${job.jobName}`);
+        if (job.score !== undefined && job.score !== null) parts.push(`岗位评分：${job.score}`);
+        if (job.description) parts.push(`岗位说明：${job.description.slice(0, 64)}${job.description.length > 64 ? "…" : ""}`);
+        els.heroSummary.textContent = parts.length ? parts.join(" · ") : "已选择岗位。";
+        const score = state.report?.jobMatchAnalysis?.overallMatchScore;
+        els.matchScoreRing.textContent = score !== undefined && score !== null ? `${Math.round(Number(score))}%` : "—";
+    }
+
+    function renderJobDetail() {
+        const job = state.selectedJob;
+        if (!job) {
+            if (els.drawerTitle) els.drawerTitle.textContent = "请选择岗位";
+            if (els.drawerMeta) els.drawerMeta.textContent = "点击左侧岗位卡片后，这里会显示完整的岗位画像。";
+            els.jobDetail.innerHTML = ` <div class="report-empty">先点击一个岗位卡片。<br />这里会显示岗位名称、技能、证书、创新、学习、抗压、沟通、实习能力、岗位说明与评分。 </div>`;
+            return;
+        }
+
+        updateDrawerHeader(job);
+
+        const chipList = (value, extraClass = "") => {
+            const arr = splitTokens(value);
+            return arr.length
+                ? arr.map(t => `<span class="tag ${extraClass}">${escapeHtml(t)}</span>`).join("")
+                : `<span class="tag gray">暂无</span>`;
+        };
+
+        const fields = [
+            ["专业技能", job.skills],
+            ["证书要求", job.cert],
+            ["创新能力", job.innovation],
+            ["学习能力", job.learning],
+            ["抗压能力", job.pressure],
+            ["沟通能力", job.communication],
+            ["实习能力", job.practical]
+        ];
+
+        els.jobDetail.innerHTML = ` <div class="detail-content"><div class="detail-hero"><h3>${escapeHtml(job.jobName || "未知岗位")}</h3><p>${escapeHtml(job.description || "暂无岗位描述")}</p></div><div class="detail-metrics"><div class="metric"><strong>岗位评分</strong><span><span class="tag ${Number(job.score) >= 80 ? "green" : Number(job.score) >= 60 ? "orange" : "red"}">${escapeHtml(job.score ?? "—")}</span></span></div><div class="metric"><strong>岗位ID</strong><span>${escapeHtml(job.id ?? "—")}</span></div><div class="metric"><strong>创建时间</strong><span>${escapeHtml(job.createTime || "—")}</span></div><div class="metric"><strong>更新时间</strong><span>${escapeHtml(job.updateTime || "—")}</span></div></div><div class="detail-section"><h4>能力维度</h4>${fields.map(([label, value]) => {
+                const percent = tokenizeCountScore(value);
+                return ` <div class="progress-item"><div class="progress-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "暂无")}</strong></div><div class="progress-bar"><div style="width:${percent}%"></div></div></div>`;
+            }).join("")} </div><div class="detail-section"><h4>技能 / 证书 / 特征</h4><div class="detail-list">${chipList(job.skills)}
+              ${chipList(job.cert, "orange")} </div></div></div>`;
+    }
+
+    function renderRelations() {
+        const rels = state.selectedRelations || [];
+        if (!rels.length) {
+            els.relationList.innerHTML = ` <div class="report-empty">这个岗位暂时没有查到可展示的关系。<br />你可以点另一个岗位，或者切换“查看全量图谱”。 </div>`;
+            return;
+        }
+
+        els.relationList.innerHTML = rels.slice(0, 10).map(r => {
+            const isPromote = String(r.relationType) === "PROMOTION";
+            return ` <article class="relation-card"><div class="relation-head"><strong>${escapeHtml(r.sourceJob || "—")} → ${escapeHtml(r.targetJob || "—")}</strong><div class="tag-row"><span class="tag ${isPromote ? "green" : "orange"}">${escapeHtml(r.relationType || "—")}</span><span class="tag gray">${escapeHtml(r.relationCategory || "—")}</span><span class="tag">${escapeHtml(r.matchingScore || "—")}</span></div></div><p class="relation-desc"><strong>技能差距：</strong>${escapeHtml(r.skillGap || "—")}</p><p class="relation-desc" style="margin-top:8px;"><strong>原因：</strong>${escapeHtml(r.reason || "—")}</p></article>`;
+        }).join("");
+    }
+
+    function renderReport(report = state.report) {
+        state.report = report || null;
+        updateKpis();
+
+        if (!report) {
+            els.reportStatus.classList.remove("hidden");
+            els.reportStatus.textContent = "还没有生成报告。请先上传简历或文本，再点击“生成报告”。";
+            els.reportContent.innerHTML = ` <div class="report-empty">这里会展示生成后的职业报告。<br />内容按“学生画像 / 岗位匹配 /职业路径 /行动计划”分块排版，不显示 JSON 原文。 </div>`;
+            setAllMiniCardsExpanded(false);
+            renderRadarChart(null);
+            return;
+        }
+
+        els.reportStatus.classList.remove("hidden");
+        els.reportStatus.textContent = "报告已生成，可继续点击“导出PDF”生成排版好的中文报告。";
+
+        const student = report.studentProfile || {};
+        const match = report.jobMatchAnalysis || {};
+        const path = report.careerPathPlan || {};
+        const action = report.actionPlan || {};
+
+        const matchedJobs = Array.isArray(match.matchedJobs) ? match.matchedJobs : [];
+        const stages = Array.isArray(action.stages) ? action.stages : [];
+        const skillChips = splitTokens(student.professionalSkills);
+        const certChips = splitTokens(student.certificates);
+        const innovation = splitTokens(student.innovationAbilities);
+        const learning = splitTokens(student.learningAbilities);
+        const stress = splitTokens(student.stressResistance);
+        const communication = splitTokens(student.communicationSkills);
+        const internship = splitTokens(student.internshipAbilities);
+        const milestones = splitTokens(path.keyMilestones);
+        const requiredSkills = splitTokens(path.requiredSkills);
+
+        const topJobs = matchedJobs.slice(0, 3).map(j => ` <div class="report-job-card"><strong>${escapeHtml(j.jobName || "—")} · ${escapeHtml(j.matchScore ?? "—")}</strong><span>${escapeHtml(splitTokens(j.strengths).slice(0, 2).join("；") || "优势待补充")}</span></div>`).join("");
+
+        els.reportContent.innerHTML = ` <div class="report-overview"><div class="report-summary-card"><div class="report-summary-top"><div class="report-stat"><strong>${safeText(student.completenessScore, "—")}</strong><span>完整度</span></div><div class="report-stat"><strong>${safeText(student.competitivenessScore, "—")}</strong><span>竞争力</span></div><div class="report-stat"><strong>${safeText(match.overallMatchScore, "—")}</strong><span>总体匹配度</span></div><div class="report-stat"><strong>${safeText(matchedJobs.length, "—")}</strong><span>匹配岗位数</span></div></div><div class="report-summary-note"><strong>综合评价：</strong>${escapeHtml(student.overallAssessment || "暂无综合评价")}<br /><strong>职业目标：</strong>${escapeHtml(path.careerGoal || "暂无职业目标")}<br /><strong>职业路径：</strong>${escapeHtml(path.careerPath || "暂无职业路径")} </div><div class="report-top-jobs">${topJobs || `<div class="report-empty">暂无匹配岗位</div>`} </div></div><div class="report-radar-card"><div class="section-head" style="margin-bottom:10px;"><div><h2 style="font-size:18px;margin:0;"> 可视化能力雷达图</h2><p style="margin:6px 0 0;">基于学生画像自动生成。</p></div><div class="section-badge">雷达可视化</div></div><div id="reportRadarChart"></div></div></div><div class="report-grid"><article class="report-box"><h3> 学生画像</h3><div class="report-chips">${skillChips.length ? skillChips.map(s => `<span class="tag">${escapeHtml(s)}</span>`).join("") : '<span class="tag gray">暂无专业技能</span>'} </div><h4>证书</h4><div class="report-chips">${certChips.length ? certChips.map(s => `<span class="tag orange">${escapeHtml(s)}</span>`).join("") : '<span class="tag gray">暂无证书</span>'} </div><h4>综合评价</h4><p>${escapeHtml(student.overallAssessment || "暂无综合评价")}</p></article><article class="report-box"><h3> 能力拆解</h3><ul class="report-list"><li><strong>创新能力：</strong>${escapeHtml(innovation.length ? innovation.join("；") : "暂无")}</li><li><strong>学习能力：</strong>${escapeHtml(learning.length ? learning.join("；") : "暂无")}</li><li><strong>抗压能力：</strong>${escapeHtml(stress.length ? stress.join("；") : "暂无")}</li><li><strong>沟通能力：</strong>${escapeHtml(communication.length ? communication.join("；") : "暂无")}</li><li><strong>实习能力：</strong>${escapeHtml(internship.length ? internship.join("；") : "暂无")}</li></ul><div class="report-mini-list" style="margin-top:12px;"><div class="report-mini-item"><strong>主要优势</strong><div class="report-mini-content">${escapeHtml(splitTokens(internship.concat(communication).slice(0, 2)).join("；") || "暂无")}</div></div><div class="report-mini-item"><strong>主要短板</strong><div class="report-mini-content">${escapeHtml(splitTokens(requiredSkills).slice(0, 2).join("；") || "暂无")}</div></div><div class="report-mini-item"><strong>建议方向</strong><div class="report-mini-content">${escapeHtml(path.industryTrend || "暂无")}</div></div></div></article><article class="report-box wide"><h3>AI 岗位匹配分析</h3><p><strong>差距分析：</strong>${escapeHtml(match.gapAnalysis || "暂无差距分析")}</p><table class="matched-table"><thead><tr><th style="width:18%;">岗位</th><th style="width:12%;">匹配度</th><th>优势</th><th>差距</th></tr></thead><tbody>${matchedJobs.length ? matchedJobs.map(j => ` <tr><td>${escapeHtml(j.jobName || "—")}</td><td>${escapeHtml(j.matchScore ?? "—")}</td><td>${escapeHtml(splitTokens(j.strengths).join("；") || "—")}</td><td>${escapeHtml(splitTokens(j.gaps).join("；") || "—")}</td></tr>`).join("") : `<tr><td colspan="4">暂无匹配岗位</td></tr>`} </tbody></table></article><article class="report-box"><h3>职业目标</h3><p>${escapeHtml(path.careerGoal || "暂无职业目标")}</p><h4>行业趋势</h4><p>${escapeHtml(path.industryTrend || "暂无行业趋势")}</p></article><article class="report-box"><h3>职业路径</h3><p>${escapeHtml(path.careerPath || "暂无职业路径")}</p><h4>关键里程碑</h4><div class="report-chips">${milestones.length ? milestones.map(m => `<span class="tag">${escapeHtml(m)}</span>`).join("") : '<span class="tag gray">暂无</span>'} </div></article><article class="report-box wide"><h3>需要培养的能力</h3><div class="report-chips">${requiredSkills.length ? requiredSkills.map(s => `<span class="tag">${escapeHtml(s)}</span>`).join("") : '<span class="tag gray">暂无</span>'} </div></article><article class="report-box wide"><h3>行动计划</h3><div class="actions-grid">${stages.length ? stages.map(stage => ` <div class="action-card"><strong>${escapeHtml(stage.stageName || "阶段")}</strong><p>${escapeHtml(stage.description || "暂无描述")}</p><p style="margin-top:10px;"><strong>行动：</strong>${escapeHtml(splitTokens(stage.actions).join("；") || "—")}</p></div>`).join("") : '<div class="report-empty">暂无分阶段计划</div>'} </div><div class="report-note-list" style="margin-top:14px;"><div class="report-note"><strong>评估指标：</strong>${escapeHtml(action.evaluationMetrics || "暂无")}</div><div class="report-note"><strong>评估周期：</strong>${escapeHtml(action.evaluationCycle || "暂无")}</div><div class="report-note" style="grid-column:1/-1;"><strong>推荐动作：</strong>${escapeHtml(splitTokens(action.recommendedActions).join("；") || "暂无")}</div></div></article></div>`;
+
+        renderRadarChart(report);
+        requestAnimationFrame(() => {
+            prepareMiniCards();
+            setAllMiniCardsExpanded(false);
+        });
+        bindMiniCardToggle();
+        els.reportStateKpi.textContent = "已生成";
+        const matchScore = match.overallMatchScore;
+        els.matchScoreRing.textContent = matchScore !== undefined && matchScore !== null ? `${Math.round(Number(matchScore))}%` : "—";
+        els.heroSummary.textContent = `报告已生成：${safeText(path.careerGoal, "请先完善简历信息")}。`;
+    }
+
+    function buildGraphData(relations, centerName = null) {
+        const nodeMap = new Map();
+        const links = [];
+
+        (relations || []).forEach(r => {
+            if (!r) return;
+            const source = safeText(r.sourceJob);
+            const target = safeText(r.targetJob);
+            if (!source || !target) return;
+
+            if (!nodeMap.has(source)) nodeMap.set(source, { name: source });
+            if (!nodeMap.has(target)) nodeMap.set(target, { name: target });
+
+            links.push({
+                source,
+                target,
+                type: r.relationType || "TRANSITION",
+                category: r.relationCategory || "—",
+                skillGap: r.skillGap || "",
+                matchingScore: r.matchingScore || "",
+                reason: r.reason || ""
+            });
+        });
+
+        const nodes = Array.from(nodeMap.values()).map(n => {
+            const active = centerName && n.name === centerName;
+            return {
+                name: n.name,
+                symbolSize: active ? 54 : 38,
+                itemStyle: { color: active ? "#4f8ef7" : "rgba(79,142,247,.60)" },
+                label: {
+                    show: true,
+                    color: "#1e3a8a",
+                    fontWeight: active ? 800 : 700,
+                    fontSize: active ? 15 : 13
+                }
+            };
+        });
+
+        const linksStyled = links.map(l => {
+            const isPromote = l.type === "PROMOTION";
+            const active = centerName ? l.source === centerName || l.target === centerName : true;
+            return {
+                ...l,
+                lineStyle: {
+                    color: isPromote ? "#16a34a" : "#4f8ef7",
+                    width: active ? (isPromote ? 4 : 3) : 1,
+                    opacity: active ? 0.96 : 0.12,
+                    curveness: 0.18
+                }
+            };
+        });
+
+        return { nodes, links: linksStyled };
+    }
+
+    function renderGraph(relations, highlight = false) {
+        if (!state.chart) return;
+        const centerName = highlight ? safeText(state.selectedJob?.jobName, null) : null;
+        const { nodes, links } = buildGraphData(relations, centerName);
+
+        state.chart.setOption({
+            animation: false,
+            tooltip: {
+                trigger: "item",
+                backgroundColor: "rgba(15,23,42,.96)",
+                borderWidth: 0,
+                textStyle: { color: "#fff", fontSize: 12 },
+                formatter: params => {
+                    if (params.dataType === "node") {
+                        return `<div style="font-weight:700;margin-bottom:6px;">${escapeHtml(params.name)}</div><div>点击查看该岗位详情</div>`;
+                    }
+                    const d = params.data || {};
+                    return ` <div style="font-weight:700;margin-bottom:6px;">${escapeHtml(d.source)} → ${escapeHtml(d.target)}</div><div>类型：${escapeHtml(d.type || "—")}</div><div>类别：${escapeHtml(d.category || "—")}</div><div>匹配分数：${escapeHtml(d.matchingScore || "—")}</div><div>技能差距：${escapeHtml(d.skillGap || "—")}</div><div>原因：${escapeHtml(d.reason || "—")}</div>`;
+                }
+            },
+            series: [{
+                type: "graph",
+                layout: "force",
+                roam: true,
+                draggable: true,
+                edgeSymbol: ["none", "arrow"],
+                edgeSymbolSize: 10,
+                label: { show: true },
+                data: nodes,
+                links,
+                force: {
+                    repulsion: 280,
+                    edgeLength: [90, 160],
+                    gravity: 0.04
+                },
+                emphasis: {
+                    focus: "adjacency",
+                    lineStyle: {
+                        width: 5,
+                        opacity: 1
+                    }
+                }
+            }]
+        }, true);
+
+        state.chart.off("click");
+        state.chart.on("click", params => {
+            if (params.dataType === "node") {
+                const found = state.jobs.find(j => String(j.jobName) === String(params.name));
+                if (found) {
+                    selectJob(found.id);
+                    scrollToSection("jobs");
+                } else {
+                    showToast(`图谱节点：${params.name}`);
+                }
+            }
+        });
+    }
+
+    function initChart() {
+        state.chart = echarts.init(els.graphChart);
+        state.chart.setOption({ animation: false });
+        window.addEventListener("resize", () => state.chart && state.chart.resize());
+    }
+
+    async function loadAllRelations() {
+        try {
+            const data = await requestJson("/job-relation");
+            state.relationsAll = Array.isArray(data) ? data : [];
+        } catch (e) {
+            state.relationsAll = [];
+            console.warn("全量关系加载失败：", e.message);
+        }
+        updateKpis();
+    }
+
+    async function loadGraphForSelectedJob() {
+        if (!state.selectedJobId) {
+            showToast("请先选择一个岗位", "error");
+            return;
+        }
+        setBusy(true, "正在刷新当前图谱...");
+        try {
+            const rels = await requestJson(`/job-relation/${state.selectedJobId}`);
+            state.selectedRelations = Array.isArray(rels) ? rels : [];
+            renderRelations();
+            renderGraph(state.selectedRelations, true);
+            showToast("当前图谱已刷新");
+        } catch (e) {
+            showToast(`图谱刷新失败：${e.message}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function loadFullGraph() {
+        setBusy(true, "正在加载全量图谱...");
+        try {
+            state.selectedRelations = state.relationsAll;
+            renderRelations();
+            renderGraph(state.relationsAll, false);
+            showToast("已切换到全量图谱");
+        } catch (e) {
+            showToast(`全量图谱加载失败：${e.message}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    function highlightSelectedRelations() {
+        if (!state.selectedRelations.length) {
+            showToast("请先选择一个岗位", "error");
+            return;
+        }
+        renderGraph(state.selectedRelations, true);
+        showToast("已高亮当前路径");
+    }
+
+    async function selectJob(id) {
+        if (!id) return;
+        state.selectedJobId = id;
+        renderJobs();
+        updateKpis();
+
+        setBusy(true, "正在加载岗位详情与图谱...");
+        try {
+            const job = await requestJson(`/job-profile/${id}`);
+            state.selectedJob = job || null;
+            openJobDrawer();
+            updateDrawerHeader(job);
+            renderSelectedJobSummary();
+            renderJobDetail();
+
+            let rels = [];
+            try {
+                rels = await requestJson(`/job-relation/${id}`);
+                rels = Array.isArray(rels) ? rels : [];
+            } catch (e) {
+                console.warn("岗位关系接口失败，回退到全量关系过滤：", e.message);
+                const jobName = safeText(job?.jobName);
+                rels = state.relationsAll.filter(r => String(r.sourceJob) === jobName || String(r.targetJob) === jobName);
+            }
+
+            state.selectedRelations = rels;
+            renderRelations();
+            renderGraph(rels.length ? rels : state.relationsAll, true);
+            showToast(`已切换岗位：${job?.jobName || id}`);
+        } catch (e) {
+            console.error(e);
+            showToast(`岗位详情加载失败：${e.message}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function loadJobs() {
+        setBusy(true, "正在加载岗位画像...");
+        try {
+            const data = await requestJson("/job-profile");
+            state.jobs = Array.isArray(data) ? data : [];
+            state.page = 1;
+            renderJobs();
+            updateKpis();
+            if (state.jobs.length) {
+                selectJob(state.jobs[0].id);
+            }
+        } catch (e) {
+            els.jobGrid.innerHTML = `<div class="report-empty">岗位列表加载失败：${escapeHtml(e.message)}</div>`;
+            showToast(`岗位列表加载失败：${e.message}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function uploadResume() {
+        const file = document.getElementById("resumeFile").files[0];
+        if (!file) {
+            showToast("请先选择简历文件", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("resume", file);
+
+        setBusy(true, "正在上传简历文件...");
+        try {
+            const json = await requestJsonWithAuth("/stu/uploadResume", {
+                method: "POST",
+                body: formData
+            });
+            if (typeof json.code !== "undefined" && Number(json.code) !== 200) {
+                throw new Error(json.message || "上传失败");
+            }
+            els.resumeUploadStatus.textContent = `已上传：${file.name}`;
+            showToast("简历上传成功");
+            //localStorage.setItem('lastUploadTime', new Date().toLocaleString());
+            updateMetaInfo();   // 刷新显示
+        } catch (e) {
+            showToast(`简历上传失败：${e.message}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function uploadText() {
+        const text = document.getElementById("resumeText").value.trim();
+        if (!text) {
+            showToast("请先输入文本内容", "error");
+            return;
+        }
+
+        setBusy(true, "正在提交文本...");
+        try {
+            const json = await requestJsonWithAuth("/stu/uploadText", {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=UTF-8" },
+                body: text
+            });
+            if (typeof json.code !== "undefined" && Number(json.code) !== 200) {
+                throw new Error(json.message || "提交失败");
+            }
+            //刷新记录上传时间
+            showToast("文本提交成功");
+            //localStorage.setItem('lastUploadTime', new Date().toLocaleString());
+            updateMetaInfo();
+            els.resumeUploadStatus.textContent = "已通过文本提交";
+        } catch (e) {
+            showToast(`文本提交失败：${e.message}`, "error");
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    function fillDemoText() {
+        document.getElementById("resumeText").value = [
+            "姓名：张三",
+            "专业：计算机科学与技术",
+            "项目经历：基于 Spring Boot 的岗位推荐系统；Vue 管理后台；简历解析项目",
+            "实习经历：某互联网公司后端开发实习",
+            "技能：Java、Spring Boot、MySQL、Redis、Vue、Linux、Git",
+            "证书：英语四级、计算机二级",
+            "竞赛：省级大学生创新创业项目、编程大赛"
+        ].join("\n");
+        showToast("已填充示例文本");
+    }
+    function resetAll() {
+        // 清空选中的岗位和报告
+        state.selectedJobId = null;
+        state.selectedJob = null;
+        state.selectedRelations = [];
+        state.report = null;
+        
+        // 清空文件上传和文本输入
+        const fileInput = document.getElementById("resumeFile");
+        const textarea = document.getElementById("resumeText");
+        const uploadStatus = document.getElementById("resumeUploadStatus");
+        if (fileInput) fileInput.value = "";
+        if (textarea) textarea.value = "";
+        if (uploadStatus) uploadStatus.innerText = "未上传";
+        
+        // 清空本地存储的统计信息（可选，根据需求决定是否保留）
+        localStorage.removeItem('lastUploadTime');
+        localStorage.removeItem('lastReportTime');
+        localStorage.removeItem('analysisCount');
+        
+        // 重新渲染界面
+        renderJobs();           // 刷新岗位列表，取消高亮
+        renderJobDetail();     // 清空岗位详情抽屉
+        renderRelations();     // 清空关系图谱列表
+        renderReport(null);    // 清空报告内容
+        updateKpis();          // 更新首页统计卡片
+        updateMetaInfo();      // 更新首页 meta 信息（如果有）
+        
+        // 可选：重置图谱（清空画布）
+        if (state.chart) {
+            state.chart.clear();
+            state.chart.setOption({
+                series: [{ type: "graph", data: [], links: [] }]
+            });
+        }
+        
+        showToast("已重置所有数据");
+    }
+
+    async function generateReport() {
+        setReportLoading(true, "正在生成职业报告...");
+        try {
+            const report = await requestJsonWithAuth("/stu/analysis", { method: "POST" });
+            state.report = report || null;
+            renderReport(state.report);
+            updateKpis();
+            renderSelectedJobSummary();
+            scrollToSection("report");
+            showToast("报告生成成功");
+            // 记录报告生成时间
+             const now = new Date().toLocaleString();
+            localStorage.setItem('lastReportTime', now);
+            let cnt = parseInt(localStorage.getItem('analysisCount') || '0') + 1;
+            localStorage.setItem('analysisCount', cnt);
+
+            // 同时更新当前用户的独立存储
+            const user = localStorage.getItem('current_user');
+            let username = "未登录";
+            if (user) {
+                try {
+                    username = JSON.parse(user).username || "未登录";
+                } catch(e) {}
+            }
+            localStorage.setItem(`lastReportTime_${username}`, now);
+            localStorage.setItem(`analysisCount_${username}`, cnt);
+            updateMetaInfo();
+        } catch (e) {
+            console.error(e);
+            state.report = null;
+            renderReport(null);
+            showToast(`报告生成失败：${e.message}`, "error");
+        } finally {
+            setReportLoading(false);
+        }
+    }
+
+    function buildPdfPages() {
+        const report = state.report;
+        if (!report) {
+            return [` <div class="pdf-page"><div class="pdf-title">AI职业规划智能体 · 职业分析报告</div><div class="pdf-subtitle">请先上传简历或文本，再点击“生成报告”。</div><div class="pdf-section"><h3>提示</h3><p>当前没有可导出的报告内容。生成后将自动展示学生画像、岗位匹配、职业路径和行动计划。</p></div></div>`];
+        }
+
+        const student = report.studentProfile || {};
+        const match = report.jobMatchAnalysis || {};
+        const path = report.careerPathPlan || {};
+        const action = report.actionPlan || {};
+        const matchedJobs = Array.isArray(match.matchedJobs) ? match.matchedJobs : [];
+        const stages = Array.isArray(action.stages) ? action.stages : [];
+        const selectedJob = state.selectedJob;
+        const topJobs = pdfTopJobs(matchedJobs);
+
+        const page1 = ` <div class="pdf-page"><div class="pdf-title">AI职业规划智能体 · 职业分析报告</div><div class="pdf-subtitle">本报告基于学生画像、岗位画像与关系图谱自动生成，内容已按页面结构排版，便于展示与打印。</div><div class="pdf-kpi-grid"><div class="pdf-kpi"><strong>${escapeHtml(student.completenessScore ?? "—")}</strong><span>学生画像完整度</span></div><div class="pdf-kpi"><strong>${escapeHtml(student.competitivenessScore ?? "—")}</strong><span>学生竞争力评分</span></div><div class="pdf-kpi"><strong>${escapeHtml(match.overallMatchScore ?? "—")}</strong><span>总体匹配度</span></div></div><div class="pdf-section"><h3>学生综合评价</h3><p>${escapeHtml(clampText(student.overallAssessment || "暂无综合评价", 260))}</p><h3 style="margin-top:14px;">职业目标</h3><p>${escapeHtml(clampText(path.careerGoal || "暂无职业目标", 220))}</p><h3 style="margin-top:14px;">当前岗位</h3><p>${escapeHtml(selectedJob?.jobName || "未选择岗位")}</p></div><div class="pdf-section"><h3>匹配岗位 Top 3</h3>${topJobs.length ? topJobs.map(j => ` <div style="margin-bottom:10px; padding:12px 14px; border-radius:16px; border:1px solid rgba(15,23,42,.08); background:#fff;"><strong style="display:block; margin-bottom:6px; font-size:13px; color:#0f172a;">${escapeHtml(j.name)} · ${escapeHtml(j.score)}</strong><div style="font-size:12px; color:#64748b; line-height:1.7;">优势：${escapeHtml(j.strengths)}</div><div style="font-size:12px; color:#64748b; line-height:1.7; margin-top:4px;">差距：${escapeHtml(j.gaps)}</div></div>`).join("") : '<p>暂无匹配岗位。</p>'} </div></div>`;
+
+        const page2 = ` <div class="pdf-page"><div class="pdf-title">岗位匹配与关系图谱</div><div class="pdf-subtitle">展示岗位之间的晋升与转换关系，以及与学生能力的匹配情况。</div><div class="pdf-section"><h3>岗位匹配分析</h3><p><strong>差距分析：</strong>${escapeHtml(clampText(match.gapAnalysis || "暂无差距分析", 220))}</p><table class="pdf-table"><thead><tr><th style="width:16%;">岗位</th><th style="width:10%;">匹配度</th><th>优势</th><th>差距</th></tr></thead><tbody>${matchedJobs.length ? matchedJobs.slice(0, 6).map(j => ` <tr><td>${escapeHtml(j.jobName || "—")}</td><td>${escapeHtml(j.matchScore ?? "—")}</td><td>${escapeHtml(clampText(splitTokens(j.strengths).join("；") || "—", 90))}</td><td>${escapeHtml(clampText(splitTokens(j.gaps).join("；") || "—", 90))}</td></tr>`).join("") : '<tr><td colspan="4">暂无匹配岗位</td></tr>'} </tbody></table></div><div class="pdf-section"><h3>岗位关系图谱</h3><table class="pdf-table"><thead><tr><th style="width:22%;">源岗位</th><th style="width:22%;">目标岗位</th><th style="width:14%;">关系</th><th style="width:12%;">分数</th><th>技能差距</th></tr></thead><tbody>${(state.selectedRelations || []).slice(0, 8).map(r => ` <tr><td>${escapeHtml(r.sourceJob || "—")}</td><td>${escapeHtml(r.targetJob || "—")}</td><td>${escapeHtml(r.relationType || "—")}</td><td>${escapeHtml(r.matchingScore || "—")}</td><td>${escapeHtml(clampText(r.skillGap || "—", 52))}</td></tr>`).join("") || '<tr><td colspan="5">暂无关系数据</td></tr>'} </tbody></table></div></div>`;
+
+        const page3 = ` <div class="pdf-page"><div class="pdf-title">职业路径与行动计划</div><div class="pdf-subtitle">基于分析结果生成职业路径、能力培养清单与分阶段行动建议。</div><div class="pdf-section"><h3>职业路径规划</h3><p><strong>行业趋势：</strong>${escapeHtml(clampText(path.industryTrend || "暂无行业趋势", 240))}</p><p><strong>职业路径：</strong>${escapeHtml(clampText(path.careerPath || "暂无职业路径", 220))}</p><h3 style="margin-top:14px;">关键里程碑</h3><div class="pdf-chips">${pdfTextArray(path.keyMilestones).length ? pdfTextArray(path.keyMilestones).map(i => `<span class="pdf-chip">${escapeHtml(i)}</span>`).join("") : '<span class="pdf-chip">暂无</span>'}</div><h3 style="margin-top:14px;">需要培养的能力</h3><div class="pdf-chips">${pdfTextArray(path.requiredSkills).length ? pdfTextArray(path.requiredSkills).map(i => `<span class="pdf-chip">${escapeHtml(i)}</span>`).join("") : '<span class="pdf-chip">暂无</span>'}</div></div><div class="pdf-section"><h3>行动计划</h3>${(stages.length ? stages.slice(0, 3).map(s => ` <div style="margin-bottom:12px; padding:12px 14px; border-radius:16px; border:1px solid rgba(15,23,42,.08);"><strong style="display:block; margin-bottom:6px; font-size:13px;">${escapeHtml(s.stageName || "阶段")}</strong><p style="margin:0; font-size:12px; color:#475569; line-height:1.8;">${escapeHtml(clampText(s.description || "暂无描述", 170))}</p><p style="margin:8px 0 0; font-size:12px; color:#475569; line-height:1.8;"><strong>行动：</strong>${escapeHtml(splitTokens(s.actions).join("；") || "—")}</p></div>`).join("") : '<p>暂无行动计划。</p>')} <div style="margin-top:10px;"><p><strong>评估指标：</strong>${escapeHtml(clampText(action.evaluationMetrics || "暂无", 160))}</p><p><strong>评估周期：</strong>${escapeHtml(action.evaluationCycle || "暂无")}</p><p><strong>推荐动作：</strong>${escapeHtml(clampText(splitTokens(action.recommendedActions).join("；") || "暂无", 220))}</p></div></div><div class="pdf-footer"><span>AI职业规划智能体</span><span>${new Date().toLocaleString("zh-CN")}</span></div></div>`;
+
+        return [page1, page2, page3];
+    }
+
+    async function exportPDF() {
+        if (!state.report) {
+            showToast("请先生成报告再导出", "error");
+            return;
+        }
+
+        setBusy(true, "正在生成 PDF...");
+        const miniCardStates = [];
+        try {
+            const cards = Array.from(els.reportContent.querySelectorAll(".report-mini-item.mini-collapsible"));
+            cards.forEach((card, index) => {
+                miniCardStates[index] = card.classList.contains("expanded");
+                const btn = card.querySelector(".mini-toggle-btn");
+                card.classList.add("expanded");
+                if (btn) {
+                    btn.textContent = "收起";
+                    btn.setAttribute("aria-expanded", "true");
+                }
+            });
+
+            await nextFrame();
+
+            const canvas = await html2canvas(els.reportContent, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: "#ffffff",
+                windowWidth: els.reportContent.scrollWidth,
+                windowHeight: els.reportContent.scrollHeight,
+                scrollX: 0,
+                scrollY: 0
+            });
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "mm", "a4");
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 10;
+            const usableWidth = pageWidth - margin * 2;
+            const usableHeight = pageHeight - margin * 2;
+
+            const sliceHeightPx = Math.floor((canvas.height * usableWidth) / usableWidth * (usableHeight / usableWidth));
+            // Use a pixel slice size based on the A4 ratio and keep a minimum for safety.
+            const effectiveSliceHeight = Math.max(800, Math.floor((canvas.width * usableHeight) / usableWidth));
+
+            let renderedHeight = 0;
+            let pageIndex = 0;
+
+            while (renderedHeight < canvas.height) {
+                const currentSliceHeight = Math.min(effectiveSliceHeight, canvas.height - renderedHeight);
+                const pageCanvas = document.createElement("canvas");
+                pageCanvas.width = canvas.width;
+                pageCanvas.height = currentSliceHeight;
+                const ctx = pageCanvas.getContext("2d");
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+                ctx.drawImage(
+                    canvas,
+                    0,
+                    renderedHeight,
+                    canvas.width,
+                    currentSliceHeight,
+                    0,
+                    0,
+                    canvas.width,
+                    currentSliceHeight
+                );
+
+                const imgData = pageCanvas.toDataURL("image/png", 1.0);
+                const sliceHeightMm = (currentSliceHeight * usableWidth) / canvas.width;
+
+                if (pageIndex > 0) pdf.addPage();
+                pdf.addImage(imgData, "PNG", margin, margin, usableWidth, sliceHeightMm);
+
+                renderedHeight += currentSliceHeight;
+                pageIndex += 1;
+            }
+
+            const fileName = `AI职业规划智能体_职业报告_${new Date().toISOString().slice(0,10)}.pdf`;
+            pdf.save(fileName);
+            showToast("PDF 已导出");
+        } catch (e) {
+            console.error(e);
+            showToast(`PDF 导出失败：${e.message}`, "error");
+        } finally {
+            const cards = Array.from(els.reportContent.querySelectorAll(".report-mini-item.mini-collapsible"));
+            cards.forEach((card, index) => {
+                const btn = card.querySelector(".mini-toggle-btn");
+                const expanded = !!miniCardStates[index];
+                card.classList.toggle("expanded", expanded);
+                if (btn) {
+                    btn.textContent = expanded ? "收起" : "点击展开";
+                    btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+                }
+            });
+            setBusy(false);
+        }
+    }
+
+    function setupSearch() {
+        const input = document.getElementById("jobSearch");
+        input.addEventListener("input", () => {
+            state.searchText = input.value || "";
+            state.page = 1;
+            renderJobs();
+        });
+    }
+
+    function init() {
+        document.title = "AI职业规划智能体";
+
+        // Set up periodic authentication check (every 30 seconds)
+        setInterval(checkAuthentication, 30000);
+
+        bindMenu();
+        setupSearch();
+        initChart();
+        bindDrawer();
+        bindMiniCardToggle();
+        renderRadarChart(null);
+        renderReport(null);
+        updateKpis();
+        loadJobs();
+        loadAllRelations();
+        updateMetaInfo();
+
+        document.addEventListener("keydown", e => {
+            if (e.key === "Escape") els.toast.classList.remove("show");
+        });
+    }
+
+    window.generateReport = generateReport;
+    window.exportPDF = exportPDF;
+    window.uploadResume = uploadResume;
+    window.uploadText = uploadText;
+    window.fillDemoText = fillDemoText;
+    window.loadGraphForSelectedJob = loadGraphForSelectedJob;
+    window.loadFullGraph = loadFullGraph;
+    window.highlightSelectedRelations = highlightSelectedRelations;
+    window.scrollToSection = scrollToSection;
+    window.logout = logout;
+    window.checkAuthentication = checkAuthentication;
+
+   function logout() {
+    // 清除认证相关数据
+    localStorage.removeItem('current_user');
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('isLoggedIn');
+    
+    // 清除当前会话的全局键（可选，因为下次登录会重新从独立键读取覆盖）
+    localStorage.removeItem('lastReportTime');
+    localStorage.removeItem('analysisCount');
+    
+    // 独立存储（lastReportTime_用户名、analysisCount_用户名）保留，不清除
+    
+    window.location.href = 'login.html';
+} 
+    // Don't call init() here anymore, it's now called after successful authentication
+    // init();
+</script>
+</body>
+</html>
