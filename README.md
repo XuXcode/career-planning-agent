@@ -1,4 +1,4 @@
-# AI职业规划智能体 (AI Career Planning Agent)
+# AI职业规划系统 (AI Career Planning System )
 
 基于 Spring Boot + DeepSeek AI 构建的智能职业规划助手，帮助大学生分析简历、匹配合适岗位并生成个性化职业发展报告。
 
