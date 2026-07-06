@@ -100,6 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                requestURI.equals("/favicon.ico") ||
                requestURI.startsWith("/job-profile") ||
                requestURI.startsWith("/job-relation") ||
+               requestURI.startsWith("/job-graph") ||
                requestURI.startsWith("/hybridaction/") ||
                requestURI.startsWith("/api/auth/"); // 允许API认证相关路径
     }

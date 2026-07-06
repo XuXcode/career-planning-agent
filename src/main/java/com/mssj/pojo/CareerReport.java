@@ -33,10 +33,12 @@ public class CareerReport {
 
     @Data
     public static class JobMatchDetail {
-        private String jobName; // 岗位名称
-        private Double matchScore; // 匹配度分数
-        private List<String> strengths; // 与该岗位匹配的优势
-        private List<String> gaps; // 与该岗位存在的差距
+        private String jobName;                     // 岗位名称
+        private Double matchScore;                  // 最终匹配度分数（后端计算的 weightedTotalScore）
+        private MatchDimension dimensions;          // LLM 返回的四维原始得分 (v2.0)
+        private Double weightedTotalScore;          // 后端加权计算总分 (v2.0)
+        private List<String> strengths;             // 与该岗位匹配的优势
+        private List<String> gaps;                  // 与该岗位存在的差距
     }
 
     @Data

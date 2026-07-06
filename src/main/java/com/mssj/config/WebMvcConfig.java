@@ -39,6 +39,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/index.html",
                     "/job-profile/**",
                     "/job-relation/**",
+                    "/job-graph/**",
                     "/hybridaction/**"
                 );
     }

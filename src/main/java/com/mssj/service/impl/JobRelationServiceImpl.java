@@ -17,11 +17,11 @@ public class JobRelationServiceImpl implements JobRelationService {
 
     @Override
     public List<JobRelation> findAllRelations() {
-        return jobRelationMapper.findAllRelations();
+        return jobRelationMapper.getAllJobRelations();
     }
 
     @Override
-    public List<JobRelation> findRelationsByJobId(Long jobId) {
-        return jobRelationMapper.findRelationsByJobId(jobId);
+    public List<JobRelation> findRelationsByJobName(String jobName) {
+        return jobRelationMapper.findRelationsByJobName(jobName);
     }
 }

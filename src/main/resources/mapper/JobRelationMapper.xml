@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mssj.mapper.JobRelationMapper">
+
+    <!-- ============================================================
+         Recursive CTE: 多级岗位路径深度遍历 (v2.0)
+
+         使用 MySQL 8.0+ 的 WITH RECURSIVE 实现图节点的广度优先搜索
+         - 从起始岗位出发，沿 source_job → target_job 方向遍历
+         - 防环: 通过 full_path NOT LIKE 检查避免重复访问同一节点
+         - 深度限制: maxDepth 参数控制最大递归层数
+    ============================================================ -->
+
+    <resultMap id="JobRelationPathMap" type="com.mssj.pojo.JobRelationPath">
+        <id     property="id"               column="id"/>
+        <result property="sourceJob"        column="source_job"/>
+        <result property="targetJob"        column="target_job"/>
+        <result property="relationType"     column="relation_type"/>
+        <result property="relationCategory" column="relation_category"/>
+        <result property="skillGap"         column="skill_gap"/>
+        <result property="matchingScore"    column="matching_score"/>
+        <result property="transitionPath"   column="transition_path"/>
+        <result property="reason"           column="reason"/>
+        <result property="createdAt"        column="created_at"/>
+        <result property="depth"            column="depth"/>
+        <result property="fullPath"         column="full_path"/>
+    </resultMap>
+
+    <select id="findDescendantPaths" resultMap="JobRelationPathMap">
+        WITH RECURSIVE job_path AS (
+            -- Anchor: 从起始岗位出发的所有直接关系
+            SELECT
+                jr.id,
+                jr.source_job,
+                jr.target_job,
+                jr.relation_type,
+                jr.relation_category,
+                jr.skill_gap,
+                jr.matching_score,
+                jr.transition_path,
+                jr.reason,
+                jr.created_at,
+                1 AS depth,
+                CONCAT(jr.source_job, ' → ', jr.target_job) AS full_path
+            FROM job_relation jr
+            WHERE jr.source_job = #{startJobName}
+
+            UNION ALL
+
+            -- Recursive: 以当前目标岗位为下一跳的源岗位
+            SELECT
+                jr.id,
+                jr.source_job,
+                jr.target_job,
+                jr.relation_type,
+                jr.relation_category,
+                jr.skill_gap,
+                jr.matching_score,
+                jr.transition_path,
+                jr.reason,
+                jr.created_at,
+                jp.depth + 1 AS depth,
+                CONCAT(jp.full_path, ' → ', jr.target_job) AS full_path
+            FROM job_relation jr
+            INNER JOIN job_path jp ON jr.source_job = jp.target_job
+            WHERE jp.depth &lt; #{maxDepth}
+              -- 防环: 确保目标岗位未在当前路径中出现过
+              AND jp.full_path NOT LIKE CONCAT('%', jr.target_job, '%')
+        )
+        SELECT * FROM job_path
+        ORDER BY depth ASC, matching_score DESC
+    </select>
+
+</mapper>

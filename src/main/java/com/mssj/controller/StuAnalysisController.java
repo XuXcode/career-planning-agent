@@ -53,8 +53,7 @@ public class StuAnalysisController {
             }
 
             log.info("用户 {} 开始分析文件，共 {} 个文件", username, files.length);
-            return Result.success("大模型获取文件成功！",
-                    analysisService.processFileWithModel(uploadDirectory));
+            return analysisService.processFileWithModel(uploadDirectory);
         } catch (IOException e) {
             log.error("文件处理失败", e);
             return Result.fail("大模型获取文件失败：" + e.getMessage());

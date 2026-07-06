@@ -28,6 +28,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             requestURI.equals("/register.html") ||
             requestURI.equals("/user_agreement.html") ||
             requestURI.equals("/privacy_policy.html") ||
+            requestURI.startsWith("/job-graph") ||
             requestURI.endsWith(".css") ||
             requestURI.endsWith(".js") ||
             requestURI.equals("/") ||
